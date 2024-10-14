@@ -1,0 +1,189 @@
+Android Layers
+Android App lifecycle
+OOP concepts
+clean architecture
+Design patterns(MVC, MVP, MVVM, MVI, Factory,
+Singleton, Repository, Adapter, Observables)
+Solid principle
+CI/CD configuration(github actions)
+Threading concepts for android
+Garbage collection
+Coroutine
+Work manager
+Job schedulers
+Leck Cannery
+Profiler
+Lifecycle states and management
+Navigation
+Kotlin all basic (
+	Mutable/Immutable
+	Scope functions
+	Scheled class
+	inline, no inline and cross line fun
+	Higher order fun
+	All types of null safty
+	Live data
+	Flow
+	Coroutine channel
+	Lambda fun
+Github commands and utilization
+DI (Dagger2 and Helt) annotations
+Image cashing mechanisms in android
+Retrofit, Volley
+Rest api and graphql diff
+Http logging
+Security api call
+Api cashing
+Agail and water flow methodology
+
+
+------------------------------------------------------------
+viewmodel provider, viewmodel store and viewmodel store owner
+How the livedata is lifecycle aware.
+How the viewmodel survive configuratin change.
+
+
+ViewModel
+https://medium.com/@KaushalVasava/viewmodels-internal-working-in-android-a-full-guide-757afaf6510
+1.What is ViewModel
+	ViewModel class is designed to store and manage UI-related data in a lifecycle conscious way.It is the main component in the MVVM architecture.
+	ViewModel can be created with activity context or fragment context.When a ViewModel object is created, it is stored inside Activity OR
+	FragmentManager.
+2.Advantages of using View Model
+	Lifecycle aware: Viewmodel is lifecycle aware. It is automatically cleared when the lifecycle they are observing gets permanently destroyed.
+	Hold and share UI data: Viewmodel holds all the UI data which are exposed to UI handling classes via live data. These data can be shared
+	between different fragments within an Activity scope.
+	Survives in rotation and retains data: It survive the rotation process when current instance of activity is destroyed and
+	new one is created so all the data it contains remains there.
+	It provides access to business logic: It provide access to business logic from model class or repo to your UI ie. fragments or activity.
+
+
+3.How we can get the same instance of the view model when a new instance of activity is created while rotating the screen from portrait to landscape?
+	To create a viewmodel object, ViewModelProvider class is required.
+	ViewModelProvider is the utility class which is used to create the instance of viewmodel in the following way.
+	1 Create a ViewModelProvider instance
+	2 Get the desired viewmodel from the viewmodel provider object
+
+	Internally creation of ViewModelProvider required two parameters.
+	1 ViewModelStoreOwner: It is an interface. It has just one method which returns the ViewModelStore.
+	2 Factory: It is a nested interface in the ViewModelProvider class and is used to manufacture viewmodel objects.
+
+	val viewModelProvider = ViewModelProvider(this)
+	val viewModelProvider2 = ViewModelProvider(this,viewModelFactory)
+
+	If the factory is not passed then the default factory is created. Custom factory can be created for the parameterized viewmodel.
+	So now we have instance of viewmodel provider, Now let’s get our viewmodel object
+
+	val viewModelProvider = ViewModelProvider(this)
+	val viewModel = viewModelProvider.get(LoginViewModel::class.java)
+
+	// Example of using ViewModelProvider to get a ViewModel instance
+	val myViewModel: MyViewModel = ViewModelProvider(this).get(MyViewModel::class.java)
+
+4. Why view model extend?
+
+
+
+
+
+
+
+---------------
+https://www.kodeco.com/18409174-common-design-patterns-and-app-architectures-for-android
+Design Patterns
+A Design Pattern is a general, reusable solution to a commonly occurring problem within a given context.
+
+1.Creational patterns: How you create objects.
+Builder
+In a builder pattern, you are only concerned about what you need from a class and not everything that a class has.
+AlertDialog.Builder(this)
+  .setTitle("Sandwich Dialog")
+  .setMessage("Please use the spicy mustard.")
+  .setNegativeButton("No thanks") { dialogInterface, i ->
+    // "No thanks" action
+  }
+  .setPositiveButton("OK") { dialogInterface, i ->
+    // "OK" action
+  }
+  .show()
+
+
+Dependency Injection
+Singleton
+Factory
+
+2.Structural patterns: How you compose objects.
+Adapter
+Facade
+Decorator
+Composite
+
+3.Behavioral patterns: How you coordinate object interactions.
+Command
+Observer
+Strategy
+State
+
+------------------------------------------------------------------------------------------
+General Questions about Architectural Patterns
+What are architectural patterns, and why are they important in software development?
+What are the main differences between MVVM, MVI, and MVP?
+What factors should you consider when choosing an architectural pattern for a project?
+
+MVVM (Model-View-ViewModel) Questions
+What are the key components of the MVVM pattern?
+How does data binding work in MVVM?
+What is the role of the ViewModel in MVVM?
+How does MVVM improve testability?
+What are the advantages of using MVVM over MVC or MVP?
+Can you explain how lifecycle management works in MVVM, especially in Android?
+What tools or libraries can you use to implement MVVM in an Android application?
+How does MVVM handle user input and state management?
+What challenges have you faced when implementing MVVM, and how did you overcome them?
+Can you give an example of how you would implement a feature using MVVM?
+
+MVI (Model-View-Intent) Questions
+What is the MVI pattern, and how does it differ from MVVM and MVP?
+What are the components of the MVI architecture?
+How does MVI handle state management?
+What is the role of Intents in MVI?
+How do you manage side effects in MVI?
+Can you explain how data flows in an MVI application?
+What are the advantages and disadvantages of using MVI?
+How does MVI improve unidirectional data flow in applications?
+What tools or libraries can you use for implementing MVI in Android applications?
+Can you provide a code example that demonstrates MVI?
+
+MVP (Model-View-Presenter) Questions
+What are the main components of the MVP pattern?
+How does the Presenter communicate with the Model and View in MVP?
+What is the primary responsibility of the Presenter in MVP?
+How does MVP facilitate testability?
+What are the strengths and weaknesses of using MVP?
+Can you explain how MVP handles user interactions?
+What are common use cases for implementing MVP?
+How does MVP manage state and lifecycle events?
+Can you provide an example of a project where you implemented MVP?
+What challenges have you encountered when working with MVP?
+
+Comparison Questions
+How do MVVM, MVI, and MVP differ in terms of state management?
+Which architectural pattern would you choose for a particular use case, and why?
+How does data binding in MVVM compare to the communication mechanisms in MVP and MVI?
+In which scenarios would you prefer MVI over MVVM or MVP?
+What are some real-world examples of applications that use MVVM, MVI, and MVP?
+
+Scenario-Based Questions
+Given a scenario where an application requires frequent UI updates based on user input, which architectural pattern would you choose? Justify your answer.
+How would you implement error handling in an MVVM application?
+Describe how you would migrate an existing MVP application to MVVM or MVI.
+If you had to add new features to an existing application, how would the choice of architectural pattern affect your approach?
+How would you handle API responses in an MVI architecture?
+
+Practical Questions
+Can you walk us through a code example implementing MVVM, MVI, and MVP?
+How would you test an MVP Presenter? What tools would you use?
+Show us how you would implement a feature using MVI with state management.
+How do you ensure performance when using data binding in MVVM?
+What strategies would you use to manage complex UIs in MVI?
+-----------------------------------------------------------------------------

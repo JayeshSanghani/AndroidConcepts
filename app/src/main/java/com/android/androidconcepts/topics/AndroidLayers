@@ -1,0 +1,85 @@
+Components of Android Architecture
+Android is a multipurpose and open-source operating system primarily designed for mobile devices,
+but it also finds applications in kiosks, billing machines, and automotive infotainment systems.
+Its flexible architecture supports various types of applications,
+including standard Android apps, privileged apps, and device manufacturer apps.
+This flexibility makes Android a popular choice for many manufacturers.
+
+1)Applications
+2)Application Framework
+3)Android Runtime
+4)Platform Libraries
+5)Linux Kernel
+
+1)Applications
+At the top of the Android architecture is the Application Layer, where users directly interact with the device.
+This layer comprises three types of applications:
+Android Apps: Developed using the Android API and available for download from platforms like the Google Play Store.
+Privileged Apps: Preinstalled on devices and have access to more system-level features compared to standard apps.
+Device Manufacturer Apps: Developed by manufacturers using a combination of Android API, system API, and direct access to the
+Android framework. These apps provide core functionality specific to the device.
+
+
+2)Application Framework
+The Android Framework layer is the heart of the Android operating system, providing APIs and essential services for app development.
+It consists of various components:
+Activity Manager: Manages the lifecycle and navigation of apps.
+Content Providers: Facilitates data sharing between apps.
+Location Manager: Provides location services.
+Notification Manager: Handles app notifications.
+Telephony Manager: Manages phone and messaging services.
+View System: The UI framework, including widgets and layout managers
+
+
+3)Android Runtime
+The Android Runtime (ART) is crucial for executing and managing application code. ART, which replaced the Dalvik Virtual Machine (DVM)
+from Android 5.0 Lollipop onwards, uses Ahead-of-Time (AOT) compilation to improve application performance and reduce power consumption.
+It compiles app code into machine code at the time of installation, leading to faster execution.
+
+Features of ART:
+Performance: Enhanced app performance due to AOT compilation.
+Efficiency: Reduces power consumption compared to the older DVM.
+
+
+4)Platform Libraries
+The Hardware Abstraction Layer (HAL) sits above the Linux Kernel and provides a standardized interface for hardware vendors to implement
+device-specific functionality without modifying the core Android system. HAL allows Android to interact with hardware components in a
+uniform manner, irrespective of the underlying hardware differences.
+
+Benefits of HAL:
+Encapsulation: Hides the lower-level driver implementations from the higher-level system, ensuring compatibility across different devices.
+Uniform API: Offers a consistent API for various hardware components, simplifying development and maintenance.
+
+Native/Platform Libraries
+On top of HAL, we have the Native/Platform Libraries, which provide essential functions to the operating system and applications.
+These include:
+Bionic: A C library specifically designed for Android.
+Media Libraries: For playing and recording audio and video.
+Surface Manager: Manages display and screen compositing.
+Graphics Libraries: SGL and OpenGL for 2D and 3D graphics rendering.
+SQLite: A database engine for storage needs.
+WebKit: Powers the web browser.
+SSL: Ensures internet security.
+
+
+5)Linux Kernel
+At the foundation of the Android architecture lies the Linux Kernel. This essential layer manages all the hardware
+drivers such as display, camera, Bluetooth, audio, and memory drivers, which are crucial for the runtime
+functionality of Android devices.
+
+Key Functions of the Linux Kernel:
+Memory Management: Efficiently manages memory allocation, enabling smooth app performance.
+Process Management: Handles the workflow processes and resource allocation for various applications.
+Network Stack: Manages network communications effectively.
+Multitasking: Supports preemptive multitasking, allowing multiple processes to share resources efficiently.
+Power Management: Optimizes power usage for better battery life.
+Security: Ensures secure communication between applications and the host system.
+
+
+Path overview of Android layers in AOSP source:
+Kernel Drivers: /kernel/drivers/
+HAL Implementations: /hardware/libhardware/
+Native Libraries: /system/lib/ or /system/lib64/
+ART Runtime: /art/
+Framework Code: /frameworks/base/
+System Apps: /packages/apps/
