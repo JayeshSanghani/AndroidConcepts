@@ -1,0 +1,7 @@
+Feature	            WorkManager	                        Service
+----------------------------------------------------------------------------------
+Purpose	            Scheduled background tasks	        Long-running tasks
+Lifecycle awareness	Integrated with Android lifecycle	Requires manual management
+Constraints	        Supports constraints	            No built-in constraints
+Scheduling	        Built-in scheduling	                Manual scheduling
+Retry policies	    Built-in retry policies	            Manual retry handling

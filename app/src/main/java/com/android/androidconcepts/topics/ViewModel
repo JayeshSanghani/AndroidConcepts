@@ -1,0 +1,180 @@
+->ViewModelProvider
+    What: ViewModelProvider is a utility class responsible for creating and managing ViewModel instances.
+    Why: It ensures that the ViewModel is created only once and retained as long as the scope (typically an
+    activity or fragment) is alive. This helps in maintaining data during configuration changes like screen rotations.
+    When Required:Use ViewModelProvider when you need to create and retrieve a ViewModel in your Activity or Fragment.
+    For example:val viewModel = ViewModelProvider(this).get(MyViewModel::class.java)
+    This ensures that the same MyViewModel instance is returned each time within the scope of the activity or fragment.
+
+------------------------------------------------------------------------------------------------------------------------
+->ViewModelStore
+     What:ViewModelStore is a storage mechanism that holds ViewModel instances.
+     Why:Maintains a collection of ViewModel instances.
+         Cleans up ViewModel instances when the ViewModelStoreOwner is destroyed
+     When Required:Internally used by ViewModelProvider to manage the lifecycle of ViewModel instances.
+                   Not typically used directly by developers.
+
+------------------------------------------------------------------------------------------------------------------------
+->ViewModelStoreOwner
+     What:ViewModelStoreOwner is an interface that provides a ViewModelStore. It is implemented by Activity,
+     Fragment, and NavBackStackEntry by default.
+     Why:It defines the scope for ViewModel retention. When you call ViewModelProvider(this), the this object must
+     implement ViewModelStoreOwner to provide the ViewModelStore where ViewModel instances will be stored.
+     When Required:Use ViewModelStoreOwner when you are creating or accessing a ViewModel. Normally, Activity or
+     Fragment already implements this interface. For custom components, you can implement ViewModelStoreOwner
+     to manage your ViewModel lifecycle.
+
+------------------------------------------------------------------------------------------------------------------------
+->How the viewmodel survive configuration change.
+how this works:
+
+1. The Lifecycle Problem
+When an Android activity or fragment undergoes a configuration change (like a screen rotation), the system typically
+destroys and recreates the Activity or Fragment. This causes the loss of any data or UI state stored
+in the activity or fragment.
+
+2. How ViewModel Solves This
+The ViewModel class is designed to outlive the activity or fragment lifecycle. Here's how it works under the hood:
+
+Step-by-Step Process
+Activity/Fragment Recreation on Configuration Change: When a configuration change occurs (e.g., rotation),
+the system destroys the current Activity or Fragment and creates a new instance of it. This means the
+entire UI layer is recreated.
+
+ViewModelStore and ViewModelStoreOwner: Each Activity or Fragment has an associated ViewModelStore.
+This store retains the ViewModel instances associated with the Activity or Fragment. The ViewModelStore
+itself is retained across configuration changes.
+
+ViewModelProvider: When you request a ViewModel from the ViewModelProvider, it checks whether the
+ViewModel already exists in the ViewModelStore. If it does, it returns the existing instance instead
+of creating a new one. If the ViewModel doesn't exist yet, it creates one and stores it in the
+ViewModelStore for future use.
+
+Surviving Configuration Changes:
+When the Activity or Fragment is recreated due to a configuration change, the new instance of the
+Activity or Fragment gets the same ViewModelStore as the previous instance.
+The ViewModelProvider retrieves the ViewModel from this retained ViewModelStore, which means the
+ViewModel instance is not destroyed, and it retains all the data stored in it.
+Lifecycle-Aware: The ViewModel is aware of the Activity or Fragment lifecycle, and it will be cleaned up
+(destroyed) only when the Activity or Fragment is permanently finished (e.g., when the user navigates
+away or the app is closed).
+
+Diagram of the Process:
+Before Rotation:
+----------------------------------
+Activity A ----> ViewModel X
+
+After Rotation:
+----------------------------------
+Activity A' ----> ViewModel X (same instance)
+
+
+Key Points of How It Works:
+ViewModel survives configuration changes by being associated with the ViewModelStore, which is not
+destroyed during configuration changes.
+ViewModel is lifecycle-aware and will be destroyed when the associated Activity or Fragment is permanently finished.
+Data is retained in ViewModel, meaning you can store data like UI state, network responses, etc.,
+and they won't be lost during configuration changes.
+
+Code Example:
+class MyViewModel : ViewModel() {
+    var counter: Int = 0
+}
+
+class MyActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: MyViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // Get the ViewModel from the ViewModelProvider
+        viewModel = ViewModelProvider(this).get(MyViewModel::class.java)
+
+        // Increment counter and display it
+        viewModel.counter += 1
+        findViewById<TextView>(R.id.counterTextView).text = viewModel.counter.toString()
+    }
+}
+
+In this example:
+The counter in MyViewModel will survive screen rotations.
+Each time the Activity is recreated due to a configuration change, the same instance of
+MyViewModel is used, so the value of counter is retained and not reset.
+
+------------------------------------------------------------------------------------------------------------------------
+->ViewModel
+  https://medium.com/@KaushalVasava/viewmodels-internal-working-in-android-a-full-guide-757afaf6510
+  1.What is ViewModel
+  	ViewModel class is designed to store and manage UI-related data in a lifecycle conscious way.It is the main component in the MVVM architecture.
+  	ViewModel can be created with activity context or fragment context.When a ViewModel object is created, it is stored inside Activity OR
+  	FragmentManager.
+  2.Advantages of using View Model
+  	Lifecycle aware: Viewmodel is lifecycle aware. It is automatically cleared when the lifecycle they are observing gets permanently destroyed.
+  	Hold and share UI data: Viewmodel holds all the UI data which are exposed to UI handling classes via live data. These data can be shared
+  	between different fragments within an Activity scope.
+  	Survives in rotation and retains data: It survive the rotation process when current instance of activity is destroyed and
+  	new one is created so all the data it contains remains there.
+  	It provides access to business logic: It provide access to business logic from model class or repo to your UI ie. fragments or activity.
+
+
+  3.How we can get the same instance of the view model when a new instance of activity is created while rotating the screen from portrait to landscape?
+  	To create a viewmodel object, ViewModelProvider class is required.
+  	ViewModelProvider is the utility class which is used to create the instance of viewmodel in the following way.
+  	1 Create a ViewModelProvider instance
+  	2 Get the desired viewmodel from the viewmodel provider object
+
+  	Internally creation of ViewModelProvider required two parameters.
+  	1 ViewModelStoreOwner: It is an interface. It has just one method which returns the ViewModelStore.
+  	2 Factory: It is a nested interface in the ViewModelProvider class and is used to manufacture viewmodel objects.
+
+  	val viewModelProvider = ViewModelProvider(this)
+  	val viewModelProvider2 = ViewModelProvider(this,viewModelFactory)
+
+  	If the factory is not passed then the default factory is created. Custom factory can be created for the parameterized viewmodel.
+  	So now we have instance of viewmodel provider, Now let’s get our viewmodel object
+
+  	val viewModelProvider = ViewModelProvider(this)
+  	val viewModel = viewModelProvider.get(LoginViewModel::class.java)
+
+  	// Example of using ViewModelProvider to get a ViewModel instance
+  	val myViewModel: MyViewModel = ViewModelProvider(this).get(MyViewModel::class.java)
+
+  4. Why view model extend?
+   ViewModels in Android extend the androidx.lifecycle.ViewModel class to leverage its built-in lifecycle awareness and data persistence features.
+
+   Here's a breakdown of why extending ViewModel is essential:
+
+   Lifecycle Awareness: ViewModel is designed to be aware of the lifecycle of the associated activity or fragment. This means it can automatically handle situations like configuration changes (e.g., screen rotation) and prevent data loss.
+   Data Persistence: When an activity or fragment is destroyed and recreated, ViewModel persists, preserving its data. This ensures that data is retained even when the UI is temporarily destroyed.
+   Decoupling: By extending ViewModel, you can separate the logic for managing UI-related data from the activity or fragment. This improves code organization and makes it easier to test your application's UI components.
+   Shared Data: Multiple activities or fragments can share a single ViewModel instance, making it easier to manage shared data across different parts of your application.
+   Simplified Data Handling: ViewModel provides convenient methods for observing data changes and updating the UI automatically using LiveData or StateFlow.
+   In summary, extending ViewModel offers a structured and efficient way to manage UI-related data in your Android applications, making them more robust, maintainable, and responsive.
+
+------------------------------------------------------------------------------------------------------------------------
+->
+
+------------------------------------------------------------------------------------------------------------------------
+->
+
+------------------------------------------------------------------------------------------------------------------------
+->
+
+------------------------------------------------------------------------------------------------------------------------
+->
+
+------------------------------------------------------------------------------------------------------------------------
+->
+
+------------------------------------------------------------------------------------------------------------------------
+->
+
+------------------------------------------------------------------------------------------------------------------------
+->
+
+------------------------------------------------------------------------------------------------------------------------
+->
+
+------------------------------------------------------------------------------------------------------------------------

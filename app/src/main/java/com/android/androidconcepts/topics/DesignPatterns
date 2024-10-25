@@ -1,0 +1,70 @@
+https://www.kodeco.com/18409174-common-design-patterns-and-app-architectures-for-android
+Design Patterns
+Design patterns usually deal with objects.
+A Design Pattern is a general, reusable solution to a commonly occurring problem within a given context.
+1.Creational patterns: How you create objects.
+    Builder
+    Dependency Injection
+    Singleton
+    Factory
+2.Structural patterns: How you compose objects.
+    Adapter
+    Facade
+    Decorator
+    Composite
+3.Behavioral patterns: How you coordinate object interactions.
+    Command
+    Observer
+    Strategy
+    State
+
+
+1.Creational patterns: How you create objects.
+->Builder
+In a builder pattern, you are only concerned about what you need from a class and not everything that a class has.
+AlertDialog.Builder(this)
+  .setTitle("Sandwich Dialog")
+  .setMessage("Please use the spicy mustard.")
+  .setNegativeButton("No thanks") { dialogInterface, i ->
+    // "No thanks" action
+  }
+  .setPositiveButton("OK") { dialogInterface, i ->
+    // "OK" action
+  }
+  .show()
+
+
+->Dependency Injection
+ Injects dependencies into objects instead of creating them within the object itself.
+
+
+->Singleton
+
+
+->Factory
+
+2.Structural patterns: How you compose objects.
+->Adapter
+
+
+->Facade
+
+
+->Decorator
+
+
+->Composite
+
+3.Behavioral patterns: How you coordinate object interactions.
+->Command
+
+
+->Observer
+
+
+->Strategy
+
+
+->State
+
+------------------------------------------------------------------------------------------

@@ -15,17 +15,19 @@ Leck Cannery
 Profiler
 Lifecycle states and management
 Navigation
-Kotlin all basic (
+Kotlin all basic
 	Mutable/Immutable
 	Scope functions
 	Scheled class
 	inline, no inline and cross line fun
 	Higher order fun
-	All types of null safty
+	All types of null safety
 	Live data
 	Flow
 	Coroutine channel
 	Lambda fun
+	Infix function
+	Suspend function and how its work
 Github commands and utilization
 DI (Dagger2 and Helt) annotations
 Image cashing mechanisms in android
@@ -37,50 +39,29 @@ Api cashing
 Agail and water flow methodology
 
 
+What is Concurrency in coroutine.
+What is Scopes in coroutine an how to switch context.
+How we handle asynchronous parallel calls and give me case scenario.
+What are coroutine builders and explain about its use case.
+
+//ViewModel
+What is viewmodel and explain how it work and handle configuration change.
+If we have to make two api call and one for token and another for getting User detail what could the best way and where should we store data of token.
+Setup all the required dependency for Unit test and DI (Dagger2) for test class.
+ViewModel and android viewmodel difference and ways to initialize viewmodel .
+
+
+// DI(Hilt)
+Annotation, Definition, Injection, EntryPoints
 ------------------------------------------------------------
-viewmodel provider, viewmodel store and viewmodel store owner
-How the livedata is lifecycle aware.
-How the viewmodel survive configuratin change.
+
+->How the livedata is lifecycle aware.
 
 
-ViewModel
-https://medium.com/@KaushalVasava/viewmodels-internal-working-in-android-a-full-guide-757afaf6510
-1.What is ViewModel
-	ViewModel class is designed to store and manage UI-related data in a lifecycle conscious way.It is the main component in the MVVM architecture.
-	ViewModel can be created with activity context or fragment context.When a ViewModel object is created, it is stored inside Activity OR
-	FragmentManager.
-2.Advantages of using View Model
-	Lifecycle aware: Viewmodel is lifecycle aware. It is automatically cleared when the lifecycle they are observing gets permanently destroyed.
-	Hold and share UI data: Viewmodel holds all the UI data which are exposed to UI handling classes via live data. These data can be shared
-	between different fragments within an Activity scope.
-	Survives in rotation and retains data: It survive the rotation process when current instance of activity is destroyed and
-	new one is created so all the data it contains remains there.
-	It provides access to business logic: It provide access to business logic from model class or repo to your UI ie. fragments or activity.
 
 
-3.How we can get the same instance of the view model when a new instance of activity is created while rotating the screen from portrait to landscape?
-	To create a viewmodel object, ViewModelProvider class is required.
-	ViewModelProvider is the utility class which is used to create the instance of viewmodel in the following way.
-	1 Create a ViewModelProvider instance
-	2 Get the desired viewmodel from the viewmodel provider object
 
-	Internally creation of ViewModelProvider required two parameters.
-	1 ViewModelStoreOwner: It is an interface. It has just one method which returns the ViewModelStore.
-	2 Factory: It is a nested interface in the ViewModelProvider class and is used to manufacture viewmodel objects.
 
-	val viewModelProvider = ViewModelProvider(this)
-	val viewModelProvider2 = ViewModelProvider(this,viewModelFactory)
-
-	If the factory is not passed then the default factory is created. Custom factory can be created for the parameterized viewmodel.
-	So now we have instance of viewmodel provider, Now let’s get our viewmodel object
-
-	val viewModelProvider = ViewModelProvider(this)
-	val viewModel = viewModelProvider.get(LoginViewModel::class.java)
-
-	// Example of using ViewModelProvider to get a ViewModel instance
-	val myViewModel: MyViewModel = ViewModelProvider(this).get(MyViewModel::class.java)
-
-4. Why view model extend?
 
 
 
@@ -94,7 +75,7 @@ Design Patterns
 A Design Pattern is a general, reusable solution to a commonly occurring problem within a given context.
 
 1.Creational patterns: How you create objects.
-Builder
+->Builder
 In a builder pattern, you are only concerned about what you need from a class and not everything that a class has.
 AlertDialog.Builder(this)
   .setTitle("Sandwich Dialog")
@@ -108,21 +89,37 @@ AlertDialog.Builder(this)
   .show()
 
 
-Dependency Injection
-Singleton
-Factory
+->Dependency Injection
+
+
+->Singleton
+
+
+->Factory
 
 2.Structural patterns: How you compose objects.
-Adapter
-Facade
-Decorator
-Composite
+->Adapter
+
+
+->Facade
+
+
+->Decorator
+
+
+->Composite
 
 3.Behavioral patterns: How you coordinate object interactions.
-Command
-Observer
-Strategy
-State
+->Command
+
+
+->Observer
+
+
+->Strategy
+
+
+->State
 
 ------------------------------------------------------------------------------------------
 General Questions about Architectural Patterns
@@ -187,3 +184,22 @@ Show us how you would implement a feature using MVI with state management.
 How do you ensure performance when using data binding in MVVM?
 What strategies would you use to manage complex UIs in MVI?
 -----------------------------------------------------------------------------
+Designation	                Organization	                    Location	Duration	Start date	End date
+Android Developer	        Vaidya Realities	                Rajkot	    18	        01/04/2014	30/10/2015
+Android Developer	        Samartha Solutions	                Ahmedabad	5	        01/12/2015	31/05/2016
+Android Developer	        Dubond Infotech Services LLP	    Ahmedabad	41	        09/06/2016	22/11/2019
+Senior Software Engineer	Pay Ok Fintech Ecosystem Pvt Ltd	Ahmedabad	22	        25/11/2019	07/09/2021
+Senior Android Developer	Omni ISM	                        Ahmedabad	27	        09/09/2021	31/12/2023
+
+--------------------------------------------------------------------------------------
+ I request a relocation to another project within the company. As you are aware, my last working day is October 30, 2024
+ just get call from my parent company.
+
+I have not received any communication regarding potential project changes, and I am concerned about the short turnaround
+time to secure a new position outside the company.
+Given the circumstances, I kindly request your assistance in finding a suitable project within the organization where
+I can continue to contribute my skills and expertise.
+I am open to exploring new opportunities and am confident in my ability to adapt to different project requirements.
+Thank you for your understanding and consideration of my request.
+
+--------------------------------------------------------------------------------------

@@ -1,0 +1,119 @@
+An Activity in Android goes through various lifecycle stages, managed by the following callback methods:
+
+onCreate()
+Called when the activity is first created.
+Used for initializing components, setting up the UI (setContentView()), and setting up any required resources.
+Runs once during the entire lifecycle of the activity.
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    // Initialize activity
+    setContentView(R.layout.activity_main)
+}
+
+
+onStart()
+Called when the activity becomes visible to the user.
+The activity is transitioning from the "created" state to the "visible" state.
+Used for any preparations that need to occur as the activity is coming to the foreground
+override fun onStart() {
+    super.onStart()
+    // Activity is now visible
+}
+
+
+onResume()
+Called when the activity starts interacting with the user.
+The activity is now in the foreground and receiving user input.
+Typically, animations, UI updates, and other visual components should be started here.
+override fun onResume() {
+    super.onResume()
+    // Activity is now in the foreground
+}
+
+
+onPause()
+Called when the activity is no longer in the foreground but is still visible (e.g., when another activity is
+partially covering it or the user is transitioning to another activity).
+This is where you should pause any ongoing tasks that do not need to continue when the user is not actively
+interacting with the activity (e.g., video playback).
+The activity is still partially visible.
+override fun onPause() {
+    super.onPause()
+    // Pause ongoing tasks (e.g., video playback)
+}
+
+
+onStop()
+Called when the activity is no longer visible to the user.
+This could happen if the user navigates to another activity or the app is put into the background.
+Resources that are not needed when the app is not visible should be released here to optimize memory usage.
+override fun onStop() {
+    super.onStop()
+    // Release resources (e.g., stop listening to location updates)
+}
+
+
+onDestroy()
+Called before the activity is destroyed, either because the user is finishing it (e.g., pressing the back button)
+or the system is temporarily destroying it to save space.
+Use this method to clean up any resources, such as closing database connections, stopping services, or releasing
+any bound resources.
+override fun onDestroy() {
+    super.onDestroy()
+    // Cleanup resources
+}
+
+onRestart()
+Called when the activity is being restarted after it was stopped (but not destroyed).
+This happens if the activity is coming back to the foreground after being in the background.
+override fun onRestart() {
+super.onRestart()
+// Activity is restarting after being stopped
+}
+
+
+
+Lifecycle Transitions:
+Here’s a typical flow of the lifecycle events when the activity is opened, interacted with, and then closed:
+App Starts: onCreate() → onStart() → onResume()
+User Navigates to Another Activity: onPause() → onStop()
+User Returns to Activity: onRestart() → onStart() → onResume()
+User Closes Activity: onPause() → onStop() → onDestroy()
+
+
+Key Points of Each Lifecycle Method:
+onCreate(): Initialize activity components (e.g., UI, data binding).
+onStart(): Prepare the activity to become visible, but it's not yet in the foreground.
+onResume(): The activity is fully visible and active for user interaction.
+onPause(): The activity is still partially visible but no longer in focus; pause tasks that don’t need to run
+while the user isn’t interacting with the app.
+onStop(): The activity is no longer visible; release resources to optimize memory usage.
+onDestroy(): Clean up resources; the activity is being destroyed, either because the user finished it or due
+to a configuration change.
+onRestart(): Called when returning to an activity that was previously stopped.
+
+
+Configuration Changes
+When a configuration change occurs (e.g., device rotation or change in language settings), the system will destroy
+and recreate the activity to apply the new configuration.
+Configuration Change Lifecycle: When the orientation changes, the following methods are typically called:
+onPause() → onStop() → onDestroy() → onCreate() → onStart() → onResume()
+To handle configuration changes without destroying the activity, you can specify handling in the manifest:
+<activity android:name=".MainActivity"
+          android:configChanges="orientation|screenSize"/>
+Alternatively, you can use ViewModel or onSaveInstanceState() to retain the state across configuration changes.
+
+
+Application Lifecycle
+The Application class manages the global state of the app. While activities handle the lifecycle at the user interface level, the Application class lifecycle methods manage the entire app:
+onCreate(): Called when the app process is created.
+onTerminate(): Called when the app process is terminated (only called in emulators, not in production devices).
+For lifecycle-aware app components (like services, databases, and listeners), consider using Android Architecture Components, such as ViewModel, LiveData, and WorkManager, which help manage lifecycle-related concerns.
+
+
+Best Practices for Managing the Lifecycle:
+Use ViewModel for UI-related data: ViewModel survives configuration changes, making it ideal for managing data across the activity's lifecycle.
+Use onSaveInstanceState(): Store small amounts of UI-related data, like the state of user inputs, to handle temporary state loss (e.g., screen rotation).
+Minimize work in onCreate(): Do not perform long-running operations in onCreate(), as it can delay the activity from becoming responsive.
+Use onResume() for critical updates: If you need to refresh UI data whenever the user returns to the activity (e.g., after a network call), trigger the refresh in onResume().
+Properly release resources in onPause() and onStop(): Release or pause resources such as animations, media playback, and sensors in onPause() and onStop() to avoid wasting resources when the activity is not in the foreground.
