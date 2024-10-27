@@ -1,0 +1,72 @@
+
+1. Write Generic Function for input and output parameters.
+2. Kotlin Scope Functions and their return types.
+3. Solid principle
+4. How to create Custom Coroutine Scope.
+5. What is in, out, where?
+6. What is internal, inline, noinline, crossinline, expect, reified, sealed, inner, open, operator, infix, Typealias
+7. What is difference between const and val?
+8. How extension function works?
+9. How to create Generic ParameterizedClass?
+10. How to write getter setter.
+11. In data class field should not be editable from outside.
+12. How does Navigation Component & NavigationHost Works? (Link : https://medium.com/@KaushalVasava/navigation-in-jetpack-compose-full-guide-beginner-to-advanced-950c1133740)
+Ans : It has three major parts
+	- NavigationGraph : It keeps all navigation and destination data in one place. This includes all of the locations in the App.
+	- NavHost : It shows various destination from your Navigation Graph. NavHost links NavController with a NavigationGraph that specifies the destination.
+	- NavController : NavController is the central api for the Navigation Component. It is stateful and keeps track of the back stack screens.
+	
+	val navController = rememberNavController()
+	NavHost(navController = navController, startDestination = "profile") {
+    	composable("profile") { Profile(/*...*/) }
+    	composable("friendslist") { FriendsList(/*...*/) }
+    
+	}
+
+13. How does Constraint Layout works and how it is better than other layouts?
+14. Android CTS and VTS debugging
+15. What is delegate function in kotlin?
+16. MutableStateFlow vs MutableSharedFlow? (Link : https://amitshekhar.me/blog/stateflow-and-sharedflow)
+17. How to pass data from SecondFragment to FirstFragment?
+Ans : Using "savedStateHandle"
+	- In SecondFragment => "navController.previousBackStackEntry?.savedStateHandle?.set(key, value)"
+	- In FirstFragment => "navController.currentBackStackEntry?.savedStateHandle?.get<String>(key)"
+
+18. What is Sealed class?
+19. Sealed Class vs Enum Class
+20. Pagination Library
+21. Write Kotlin Getter and Setter
+Ans : 	var isEmpty: Boolean = false
+			get() = field
+			set(value) {
+				field = value
+			}
+
+22. What does mean invariant in programming? (Link : https://blog.stackademic.com/generics-in-kotlin-14d1b03f1e9a)
+23. What is Covariance
+24. What kind of securities are used at app end?
+25. What is difference between Barrier and Guideline? (Link : https://stackoverflow.com/questions/47114672/what-is-difference-between-barrier-and-guideline-in-constraint-layout)
+26. Android Launch Mode.
+27. How Android Work Manager works?
+28. Android Services?
+29. IntentService and JobIntentService is deprecated, then what should we use now?
+30. Android Architecture?
+Ans : Apps, Framework, Android Runtime Libraries, Hardware Accelaration Layer, Kernerl (Driver, Power Management)
+31. how to stop fragment from recreating on configuration change?
+Ans : Using setRetainInstance(true), inside Fragment.
+	In Activity.onCreate() system checks the savedInstanceState is null. If it is, create your Fragments. If not, then don't as the system will automatically restore them.
+32. JetPack Categories.
+Ans : Foundation, Architecture, UI, Behaviour
+33. What is Cold Flow vs Hot Flow? (Link : https://amitshekhar.me/blog/cold-flow-vs-hot-flow)
+34. how to convert any Callback to Coroutines in Kotlin? (Link : https://amitshekhar.me/blog/callback-to-coroutines-in-kotlin)
+35. Slealed Class vs Enum Class (Link : https://www.linkedin.com/pulse/sealed-vs-enum-classes-kotlin-sagar-malhotra/)
+36. Design Cache system, and how it can be implemented in Database? (Link : https://medium.com/@narengowda/designing-the-caching-system-e42c6938df6a)
+37. How do we achieve erase of the object from a random position in least time possible?
+38. Kotlin Delegate properties and How it works?
+39. What is varience in java?
+40. Explain kotlin coroutine stackless.
+41. What is smali and Playintegrity
+42. minifyenabled vs shrinkresources?
+43. coroutineScope vs supervisorScope ?
+
+

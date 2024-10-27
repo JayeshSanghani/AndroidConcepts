@@ -1,0 +1,68 @@
+LINK : https://blog.mindorks.com/using-scoped-functions-in-kotlin-let-run-with-also-apply/
+
+Scoped functions are functions that execute a block of code within the context of an object.
+The context of the object can be referred to as “it” or “this” 
+
+Let (provides an option to perform an operation on the current object)
+	- It refers to the context of the object by using the “it”
+	- Returns transformed or same object.
+	- Easily helps in providing null checks.
+	- Example 
+		|	val name = Person().name?.let {
+        |	"The name of the Person is: $it"
+    	|	}
+    	|	print(name)
+
+
+
+Run (It is similar to `let` )
+	- It refers to the context of the object by using the "this"
+	- Returns transformed or same object.
+	- Example
+		|	private fun performRunOperation() {
+		|   val person: Person? = null
+		|    person?.run {
+		|       name = "asdf"
+		|       contactNumber = "1234"
+		|       address = "wasd"
+		|       displayInfo()
+		|   	 }
+		|	}
+
+
+With (It is similar to `run`. The main difference is that `run` is a dot method and `with` is a higher-order function.)
+	- It is a non-extension function, In this we pass an object as its first parameter and a block of code.
+	- Here performing null check is difficult.
+	- It refers to the context of the object by using the "this"
+	- Example
+		|	private fun performWithOperation() {
+		|   val person: Person? = null
+		|    with(person) {
+		|       this?.name = "asdf"
+		|        this?.contactNumber = "1234"
+		|        this?.address = "wasd"
+		|        this?.displayInfo()
+		|   	 }
+		|	}
+
+apply (It returns the operated object itself after executing the block of code.)
+	- It change or assign the values to properties. It’s handy for configuring or initialising objects.
+	- This function is used when you wish to change the object's properties or behaviour.
+	- Example
+		|	Intent().apply {
+	    |    	action = intentAction
+	    |    	data = Uri.parse(intentData)
+	    |	}
+
+also (It is used to chaining scope funtions)
+	- Always returns the same object which it is referring to.
+	- Example
+		|	private fun performAlsoOperation() {
+		|    val name = Person().also {
+		|        print("Current name is: ${it.name}")
+		|        it.name = "ModifiedName"
+		|    }.run {
+		|        "Modified name is: $name\n"
+		|    }
+		|    print(name)
+		| }
