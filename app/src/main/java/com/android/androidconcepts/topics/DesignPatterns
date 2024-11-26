@@ -21,7 +21,8 @@ A Design Pattern is a general, reusable solution to a commonly occurring problem
 
 1.Creational patterns: How you create objects.
 ->Builder
-In a builder pattern, you are only concerned about what you need from a class and not everything that a class has.
+Definition: In a builder pattern, you are only concerned about what you need from a class and not everything that a class has.
+Example: 
 AlertDialog.Builder(this)
   .setTitle("Sandwich Dialog")
   .setMessage("Please use the spicy mustard.")
@@ -32,39 +33,187 @@ AlertDialog.Builder(this)
     // "OK" action
   }
   .show()
-
-
+  
+  
 ->Dependency Injection
- Injects dependencies into objects instead of creating them within the object itself.
+Definition: A design pattern where an object receives its dependencies from an external source.
+Example: 
+@HiltViewModel
+class MyViewModel @Inject constructor(
+    private val repository: MyRepository
+) : ViewModel() {
+    // ViewModel logic
+}
 
 
 ->Singleton
+Definition: Ensures a class has only one instance and provides a global point of access to it.
+Example: 
+public class SharedPrefsManager {
+    private static SharedPrefsManager instance;
+    private SharedPreferences prefs;
+
+    private SharedPrefsManager(Context context) {
+        prefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+    }
+
+    public static synchronized SharedPrefsManager getInstance(Context context) {
+        if (instance == null) {
+            instance = new SharedPrefsManager(context);
+        }
+        return instance;
+    }
+
+    public void saveData(String key, String value) {
+        prefs.edit().putString(key, value).apply();
+    }
+}
 
 
 ->Factory
+Definition: Factory pattern used when Creating objects without specifying the exact class.
+Example: Suppose you have multiple Fragment types in your app and want to create them based on user input.
+// Factory class
+public class FragmentFactory {
+    public static Fragment createFragment(String type) {
+        switch (type) {
+            case "Home":
+                return new HomeFragment();
+            case "Profile":
+                return new ProfileFragment();
+            case "Settings":
+                return new SettingsFragment();
+            default:
+                throw new IllegalArgumentException("Unknown Fragment type: " + type);
+        }
+    }
+}
+Usage
+Fragment fragment = FragmentFactory.createFragment("Home");
+getSupportFragmentManager().beginTransaction()
+        .replace(R.id.container, fragment)
+        .commit();
+
+
 
 2.Structural patterns: How you compose objects.
 ->Adapter
+Definition: Converts the interface of a class into another interface clients expect.
+Example: public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+    private List<String> data;
+
+    public MyAdapter(List<String> data) {
+        this.data = data;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.textView.setText(data.get(position));
+    }
+
+    // Other RecyclerView.Adapter methods
+}
+
 
 
 ->Facade
+Definition: Simplifying a complex system with a simpler interface.
+Example: Square’s Retrofit is an open-source Android library that helps you implement the Facade pattern. You create an interface 
+to provide API data to client classes like so:
+interface BooksApi {
+  @GET("books")
+  fun listBooks(): Call<List<Book>>
+}
+
+Using MediaPlayer as a facade for audio playback.Internally, MediaPlayer handles decoding, buffering, and playback.
+MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.audio_file);
+mediaPlayer.start();
 
 
 ->Decorator
+Definition: Adds responsibilities to an object dynamically without modifying its structure.
+Example: Decorating a TextView with SpannableString.
+SpannableString spannable = new SpannableString("Bold and Italic Text");
+spannable.setSpan(new StyleSpan(Typeface.BOLD), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+spannable.setSpan(new StyleSpan(Typeface.ITALIC), 9, 15, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+textView.setText(spannable);
 
 
 ->Composite
+Definition: Composes objects into tree structures to represent part-whole hierarchies.
+Example: Android’s View hierarchy.
+LinearLayout linearLayout = new LinearLayout(context);
+Button button = new Button(context);
+TextView textView = new TextView(context);
+linearLayout.addView(button);
+linearLayout.addView(textView);
+
 
 3.Behavioral patterns: How you coordinate object interactions.
 ->Command
+Definition: Encapsulates a request as an object, allowing parameterization of clients with different requests.
+Example: Using OnClickListener to handle button clicks.
+button.setOnClickListener(v -> {
+    // Command logic
+    Toast.makeText(context, "Button clicked!", Toast.LENGTH_SHORT).show();
+});
 
 
 ->Observer
+Definition: Defines a dependency between objects so that when one changes state, all dependents are notified.
+Android Example: Using LiveData to observe data changes in ViewModel.
+viewModel.getData().observe(this, data -> {
+    textView.setText(data);
+});
+Here, LiveData notifies the observer (Activity/Fragment) when the data changes.
 
 
 ->Strategy
+Definition: Defines a family of algorithms and makes them interchangeable.
+Example: Implementing a sorting strategy for data in a list.
+interface SortStrategy {
+    void sort(List<Integer> data);
+}
+
+class BubbleSort implements SortStrategy {
+    @Override
+    public void sort(List<Integer> data) {
+        // Bubble sort implementation
+    }
+}
+
+class QuickSort implements SortStrategy {
+    @Override
+    public void sort(List<Integer> data) {
+        // Quick sort implementation
+    }
+}
+
+class DataProcessor {
+    private SortStrategy strategy;
+
+    public DataProcessor(SortStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public void setStrategy(SortStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public void process(List<Integer> data) {
+        strategy.sort(data);
+    }
+}
 
 
 ->State
+Definition: Allows an object to alter its behavior when its internal state changes.
+Example: MediaPlayer state transitions (Prepared, Playing, Paused)
+MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.audio_file);
+if (!mediaPlayer.isPlaying()) {
+    mediaPlayer.start(); // Changes to "Playing" state
+} else {
+    mediaPlayer.pause(); // Changes to "Paused" state
+}
 
 ------------------------------------------------------------------------------------------
