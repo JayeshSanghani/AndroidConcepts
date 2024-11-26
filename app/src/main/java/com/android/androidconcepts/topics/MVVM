@@ -50,50 +50,84 @@ Boilerplate Code: Can result in additional code for simple applications.
 Purpose:
 	Contains UI logic (Activity/Fragment) and observes changes from ViewModel.
 Classes:
+ 	->XML Layout (activity_login.xml)
+		The XML layout uses two-way data binding (@={}) to directly bind the EditText values to the ViewModel and triggers the login logic on button click.
+	<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	    xmlns:app="http://schemas.android.com/apk/res-auto"
+	    xmlns:tools="http://schemas.android.com/tools">
+		
+	    <data>
+	        <variable
+	            name="viewModel"
+	            type="com.example.app.LoginViewModel" />
+	    </data>
+
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:orientation="vertical"
+	        android:padding="16dp">
+
+	        <EditText
+	            android:id="@+id/editTextUsername"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:hint="Username"
+	            android:text="@={viewModel.username}" />
+
+	        <EditText
+	            android:id="@+id/editTextPassword"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:hint="Password"
+	            android:inputType="textPassword"
+	            android:text="@={viewModel.password}" />
+
+	        <Button
+	            android:id="@+id/buttonLogin"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:text="Login"
+	            android:onClick="@{() -> viewModel.login()}" />
+
+	        <ProgressBar
+	            android:id="@+id/progressBar"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:visibility="@{viewModel.isLoading ? View.VISIBLE : View.GONE}" />
+	    </LinearLayout>
+	</layout>
+	
 	->LoginActivity (or LoginFragment):
-		Acts as the View.
-		Observes LiveData from the LoginViewModel and updates the UI accordingly.
-
-
+		Using Data Binding, the XML layout binds directly to the LoginViewModel. This removes the need to manually find views or set up listeners in the Activity.
 	class LoginActivity : AppCompatActivity() {
+	    private lateinit var binding: ActivityLoginBinding
 	    private val viewModel: LoginViewModel by viewModels {
 	        LoginViewModelFactory(LoginUseCase(LoginRepository()))
 	    }
 
 	    override fun onCreate(savedInstanceState: Bundle?) {
 	        super.onCreate(savedInstanceState)
-	        setContentView(R.layout.activity_login)
+	        binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
-	        val usernameEditText: EditText = findViewById(R.id.editTextUsername)
-	        val passwordEditText: EditText = findViewById(R.id.editTextPassword)
-	        val loginButton: Button = findViewById(R.id.buttonLogin)
-	        val progressBar: ProgressBar = findViewById(R.id.progressBar)
+	        // Bind ViewModel to the layout
+	        binding.viewModel = viewModel
+	        binding.lifecycleOwner = this
 
 	        // Observe login result
 	        viewModel.loginResult.observe(this) { result ->
-	            progressBar.visibility = View.GONE
 	            if (result.isSuccessful) {
 	                Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
-	                // Navigate to next screen
+	                // Navigate to the next screen
 	            } else {
 	                Toast.makeText(this, "Login Failed: ${result.errorMessage}", Toast.LENGTH_SHORT).show()
 	            }
-	        }
-
-	        // Handle login button click
-	        loginButton.setOnClickListener {
-	            progressBar.visibility = View.VISIBLE
-	            val username = usernameEditText.text.toString()
-	            val password = passwordEditText.text.toString()
-	            viewModel.login(username, password)
 	        }
 	    }
 	}
 
 	->LoginViewModel:
-		Provides data and handles logic for the View.
-		Calls the LoginUseCase to perform the login operation.
-
+		The ViewModel exposes observable fields (e.g., MutableLiveData) for the UI to bind directly to.
 	class LoginViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
 	    private val _loginResult = MutableLiveData<LoginResult>()
 	    val loginResult: LiveData<LoginResult> = _loginResult
