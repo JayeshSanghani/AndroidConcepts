@@ -152,6 +152,90 @@ Coroutine helps to manage long running task that might otherwise block main thre
 
 
 -> Coroutine scopes
+-> Coroutine scopes
+1) Global Scope
+2) Lifecycle-Aware Scopes
+3) Viewmodel Scope
+4) Coroutine Scope
+5) Superwiser Scope 
+
+1) GlobalScope
+	Description: A global, application-wide scope for launching coroutines.
+	Key Features:
+	-Coroutines live as long as the application does.
+	-No lifecycle management.
+	-Typically avoided unless necessary (e.g., background tasks that outlive components).
+	Use Case: Long-running background tasks.
+	Example:
+	fun main() {
+	    GlobalScope.launch {
+	        delay(1000L)
+	        println("Running in GlobalScope!")
+	    }
+	    Thread.sleep(2000L) // Wait for coroutine to finish
+	}
+
+2) Lifecycle-Aware Scopes
+	Description: Scoped to Android lifecycle components such as Activity, Fragment, or ViewModel.
+	Key Features:
+	Automatically cancels coroutines when the component is destroyed.
+	Use Case: Android development.
+	Examples:
+	class MyActivity : AppCompatActivity() {
+	    override fun onCreate(savedInstanceState: Bundle?) {
+	        super.onCreate(savedInstanceState)
+	        lifecycleScope.launch {
+	            delay(1000L)
+	            println("Data fetched in Activity!")
+	        }
+	    }
+	}
+
+3) Viewmodel Scope
+	Description: Tied to the lifecycle of a ViewModel. This is good choice for coroutine that need to live as long as the data viewmodel manages.
+	Key Features:
+	Automatically cancels coroutines when the component is destroyed.
+	Use Case: Android development.
+	Examples:
+	class MyViewModel : ViewModel() {
+	    fun fetchData() {
+	        viewModelScope.launch {
+	            delay(1000L)
+	            println("Data fetched in ViewModel!")
+	        }
+	    }
+	}
+
+4) CoroutineScope
+	Description: A general-purpose scope for launching coroutines tied to a given context.
+	Key Features:
+	Can be used to create custom coroutine scopes.
+	Ideal for grouping related coroutines.
+	Use Case: Custom scopes for specific tasks or components.
+	Example:
+	import kotlinx.coroutines.*
+
+	class MyCoroutineScope : CoroutineScope {
+	    private val job = Job()
+	    override val coroutineContext = Dispatchers.Main + job
+
+	    fun fetchData() {
+	        launch {
+	            delay(1000L)
+	            println("Data fetched!")
+	        }
+	    }
+
+	    fun clear() {
+	        job.cancel() // Cancel all coroutines in this scope
+	    }
+	}
+
+5) Superwiser Scope 
+	A scope that create a superwiser job for its children.
+	Unlike regular coroutine scope, if one child coroutine fails, the others are not cancelled
+
+
 
 
 
