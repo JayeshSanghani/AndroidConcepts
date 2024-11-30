@@ -152,7 +152,6 @@ Coroutine helps to manage long running task that might otherwise block main thre
 
 
 -> Coroutine scopes
--> Coroutine scopes
 1) Global Scope
 2) Lifecycle-Aware Scopes
 3) Viewmodel Scope
@@ -192,7 +191,7 @@ Coroutine helps to manage long running task that might otherwise block main thre
 	}
 
 3) Viewmodel Scope
-	Description: Tied to the lifecycle of a ViewModel. This is good choice for coroutine that need to live as long as the data viewmodel manages.
+	Description: Tied to the lifecycle of a ViewModel. This is good choice for coroutine that need to live as long as the data 		viewmodel manages.
 	Key Features:
 	Automatically cancels coroutines when the component is destroyed.
 	Use Case: Android development.
