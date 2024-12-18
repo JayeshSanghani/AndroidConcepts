@@ -1,0 +1,267 @@
+SOLID Principle
+
+SOLID principles are an object-oriented approach that are applied to software structure design. 
+It also ensures that the software is modular, easy to understand, debug, and refactor. 
+
+Single Responsibility Principle (SRP)
+Open-Closed Principle (OCP)
+Liskov Substitution Principle (LSP)
+Interface Segregation Principle (ISP)
+Dependency Inversion Principle (DIP)
+
+==> Single Responsibility Principle (SRP)
+The single responsibility principle states that every Java class must perform a single functionality.
+If our class is doing more than one responsibility, Then we should split our class in such a manner,
+That one class has only one responsibility and others have other responsibilities, Else we are violating SRP.
+
+Bad example:
+	data class Employee(
+	    var empId: String,
+	    var empName: String,
+	    var empPhoneNumber: String,
+
+	    var empCtc: String,
+	    var empTakeHome: String,
+	    var empTax: String,
+
+	    var addressLine: String,
+	    var landmark: String,
+	    var pinCode: String,
+	    var city: String,
+	    var state: String
+	) {
+
+	    fun getEmpBasicInformation() {
+	        println("Emp Id: $empId")
+	        println("Emp name: $empName")
+	        println("Emp name: $empName")
+	        println("Emp PhoneNumber: $empPhoneNumber")
+	    }
+
+	    fun getEmpSalaryInformation() {
+	        println("Emp ctc: $empCtc")
+	        println("Emp take home: $empTakeHome")
+	        println("Emp tax: $empTax")
+	    }
+
+	    fun getEmpAddressInformation() {
+	        println("Emp address: $addressLine,$landmark,$city,$pinCode,$state")
+	    }
+
+	}
+
+	Here Employee class is managing more than one responsibility.
+
+	1 Employee info, 2 Ctc Info, 3 Address info.
+
+	So updating any of this will take more time as well as in more places, We need to maintain the code, and if we want to reuse one of the subparts so it is not reusable.
+
+Good example:
+	data class EmployeeDetail(
+	    val employee: Employee,
+	    val employeeCTC: EmployeeCTC,
+	    val employeeAddress: EmployeeAddress
+	) {
+	    fun getEmployee() {
+	        employee.getEmpBasicInformation()
+	    }
+
+	    fun getEmployeeCTC() {
+	        employeeCTC.getEmpCTCInformation()
+	    }
+
+	    fun getEmployeeAddress() {
+	        employeeAddress.getEmpAddressInformation()
+	    }
+	}
+
+	data class Employee(
+	    var empId: String,
+	    var empName: String,
+	    var empPhoneNumber: String
+	) {
+	    fun getEmpBasicInformation(): String {
+	        return "Employee(empId='$empId'," +
+	                " empName='$empName', " +
+	                "empPhoneNumber='$empPhoneNumber')"
+	    }
+	}
+
+	data class EmployeeCTC(
+	    var empCtc: String,
+	    var empTakeHome: String,
+	    var empTax: String
+	) {
+	    fun getEmpCTCInformation(): String {
+	        return "EmployeeCTC(empCtc='$empCtc'," +
+	                " empTakeHome='$empTakeHome', " +
+	                "empTax='$empTax')"
+	    }
+	}
+
+	data class EmployeeAddress(
+	    var addressLine: String,
+	    var landmark: String,
+	    var pinCode: String,
+	    var city: String,
+	    var state: String
+	) {
+	    fun getEmpAddressInformation(): String {
+	        return "EmployeeAddress(addressLine='$addressLine'," +
+	                " landmark='$landmark'," +
+	                " pinCode='$pinCode', " +
+	                "city='$city', state='$state')"
+	    }
+	}
+
+	Above we have separated each class as a responsibility, So the code is cleaner and readable, and maintainable, If we want to use any of the classes independently in many places we can do it easily, and If we want to update any class so it is much easier now.
+
+
+==> Open-Closed Principle (OCP)
+This principle states that “Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification”
+
+Bad example:
+	class MathematicalOperation {
+
+	    fun doCalculation(operationName: String, firstNumber: Int, secondNumber: Int): Int {
+	        return when (operationName) {
+	            "Addition" -> {
+	                //do addition operation here
+	                firstNumber + secondNumber
+	            }
+	            "Subtraction" -> {
+	                // do subtraction operation
+	                firstNumber - secondNumber
+	            }
+	            else -> {
+	                throw OperationNotSupportedException()
+	            }
+	        }
+	    }
+
+	}
+
+	In the above example, We have a method that takes operation names and does the operation if we want to increase the operations so in that case, We need to touch the code of the above class and need to modify the doCalculation() method. Hence we are violating the Open close Principle.
+
+Good example:
+	abstract class MathematicalOperation {
+	    abstract fun doCalculation(firstNumber: Int, secondNumber: Int): Int
+	}
+
+	class Addition : MathematicalOperation() {
+	    
+	    override fun doCalculation(firstNumber: Int, secondNumber: Int): Int {
+	        return firstNumber + secondNumber
+	    }
+	}
+
+	class Subtraction : MathematicalOperation() {
+
+	    override fun doCalculation(firstNumber: Int, secondNumber: Int): Int {
+	        return firstNumber - secondNumber
+	    }
+	}
+
+	class Multiplication : MathematicalOperation() {
+
+	    override fun doCalculation(firstNumber: Int, secondNumber: Int): Int {
+	        return firstNumber * secondNumber
+	    }
+	}
+
+	Here in the above example, we are having an abstract class which is having the abstract method and all the subclasses are implementing its functionality according to the type of classes, So in the future, any new class will introduce so we need not modify existing code rather we can just define 1 class and its functionality and we are done.
+
+
+==> Liskov Substitution Principle (LSP)
+According to this principle “Derived or child classes must be substitutable for their base or parent classes“.
+Parent classes should be easily substituted with their child classes without changing the behaviour of the parent classes. It means that a subclass should override the methods from a parent class, which does not break the functionality of the parent class.
+
+This becomes important when we use inheritance, We always need to check if the child class is a proper subset of a parent class then only we should use inheritance otherwise we are breaking LSP.
+
+Bad Example:
+	open class Bird {
+	    fun fly() {}
+	}
+	class Parrot : Bird()
+	class Hen : Bird()
+
+	Here in the above example, we have bird class and we have Parrot and Hen subclasses
+	Bird class has the fly method but the Hen can not fly so it violates the principle
+
+Good example:
+	open class Bird {
+	}
+
+	open class FlyingBirds : Bird() {
+    fun fly() {}
+	}
+
+	class Parrot : FlyingBirds()
+	class Hen : Bird()
+	Here we have introduced one more class which has a fly method that is applicable only to the type of bird that can fly
+
+
+==> Interface Segregation Principle (ISP)
+It states that “do not force any client to implement an interface which is irrelevant to them“. 
+
+Bad Example:
+	interface Listener{
+	    fun longClickListener()
+	    fun onClickListener()
+	    fun sendDataToOtherPage()
+	    fun showToast()
+	    fun clearInput()
+	}
+	Here in the above example, we have only 1 interface and many methods which some classes will not need so we are making a bulky interface that is of not much use for many classes
+
+Good example:
+	interface ClickListener{
+	    fun longClickListener()
+	    fun onClickListener()
+	}
+
+	interface DataDownloaded{
+	    fun showResult()
+	    fun showToast()
+	}
+	Here we have 2 interfaces at the time of listeners we can use the click listener interface and on data loaded we can use another interface which are having fewer and more relevant methods
+
+
+==> Dependency Inversion Principle (DIP)
+This principle states that high-level modules should not depend on low-level modules. Both should depend on abstractions and Abstractions should not depend upon details. Details should depend upon abstractions.
+
+Bad Example:
+	class MySQLDatabase {
+	    fun connect() {
+	        println("Connecting to MySQL")
+	    }
+	}
+
+	class UserRepository {
+	    private val database = MySQLDatabase()
+
+	    fun fetchUser() {
+	        database.connect()
+	        println("Fetching user")
+	    }
+	}
+	UserRepository depends directly on the MySQLDatabase implementation.
+
+Good example:
+	interface Database {
+	    fun connect()
+	}
+
+	class MySQLDatabase : Database {
+	    override fun connect() {
+	        println("Connecting to MySQL")
+	    }
+	}
+
+	class UserRepository(private val database: Database) {
+	    fun fetchUser() {
+	        database.connect()
+	        println("Fetching user")
+	    }
+	}
+	The UserRepository depends on an abstraction (Database), making it flexible to use any database implementation.
