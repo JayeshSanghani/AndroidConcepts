@@ -1,0 +1,10 @@
+-->LiveData vs Flow(OOLRED)
+Feature						LiveData													Flow
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Operates/Threading		Operates mostly on the main thread							Operates on coroutines without blocking the main thread
+Transformations/
+Operators				Transformation operators are executed on the main thread	Operators in Flow are suspended functions and can run on any thread
+Lifecycle Awareness		Lifecycle-aware by default									Not lifecycle-aware by default
+Re-emitting Values		Retains values and re-emits them when observing again		Does not re-emit values that were already collected
+Execution Environment	Does not need a coroutine environment to execute			Requires a coroutine environment to execute
+Data Observation		Simple data observation										Enables complex data processing and transformation

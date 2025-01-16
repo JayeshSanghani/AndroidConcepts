@@ -1,0 +1,10 @@
+-->ViewModel vs Android ViewModel(LCDUCU)
+Feature				ViewModel											Android ViewModel
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Lifecycle Awareness	Not lifecycle-aware by itself.						Integrated with Android's lifecycle-aware components.
+Configuration		Doesn't handle configuration 						Retains data during configuration changes.
+					changes like screen rotation automatically.
+Dependencies		Framework/platform agnostic.						Depends on Android Jetpack library.
+Usage				Common in desktop/web applications 					Used in Android applications.
+Context				No context reference								Holds Application context reference
+Use Cases			Most UI logic without context requirements			UI logic requiring Application context access

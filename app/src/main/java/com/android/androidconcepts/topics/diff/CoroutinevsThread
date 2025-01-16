@@ -1,0 +1,8 @@
+-->Coroutine vs Thread(SELCS)
+Feature				Coroutine											Thread
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Nature				Sequential processing (one is executed at a time)	Concurrent processing (multiple threads at a time)
+Execution			Executes in one thread, can suspend and resume		Can be blocked for a period; cannot resume until finished
+Lightweight			Lightweight and controlled by the user				Runs independently
+Context and Stack	Has its own context and stack						Does not have its own system resources
+Synchronization		Asynchronous mechanism								Uses synchronization mechanisms

@@ -1,0 +1,11 @@
+-->LiveData vs MutableLiveData(MSDPUBE)
+Feature			LiveData													MutableLiveData
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Mutability		Immutable (Read-only for observers)							Mutable (Read/Write)
+Setting Values	Read-only. Values cannot be set or updated directly.		setValue(T) (Main thread), postValue(T) (Background thread), value = T
+Direct
+Modification  	Not possible from outside the owning class					Possible using the value property
+Purpose			Exposes data to observers									Allows updating and observing data
+Common Usage	For UI components (read-only access)						Inside ViewModel or data layer
+Best Practice	Expose as public property for observation					Use as internal backing property
+Example			val userName: LiveData<String> = _userName					private val _userName = MutableLiveData<String>()
