@@ -1,18 +1,103 @@
-->MVVM (Model-View-ViewModel) is a software architectural pattern commonly used in Android development.
-It separates the application into three main components:
+->MVVM (Model-View-ViewModel) 
+--MVVM, which stands for Model-View-ViewModel, is a design pattern that helps in separating the development of the 
+  user interface from the business logic 
+--This separation enhances the testability and maintainability of the code.
 
-1)Model: Represents the data and business logic. It manages the data, fetching it from databases or APIs.
-2)View: Displays the data and receives user input, but does not contain logic.
-3)ViewModel: Acts as a mediator between the View and Model. It holds the logic, processes the data,
-and exposes it in a format that the View can display.
+It separates the into three main components:
+1)Model: 
+	Model represents the data and business logic of the application. 
+	It is responsible for handling the data operations, such as fetching data from a database or a web service. 
+	In my projects, I’ve often used Room for local database management and Retrofit for network operations.
+	Think of it as the 'what' of the application.
+2)View: 
+	Displays the data and receives user input. 
+	This is the UI layer that displays the data and sends user actions to the ViewModel. 
+	In Android, this is typically represented by Activities, Fragments, and XML layouts. 
+	I’ve leveraged data binding extensively to bind UI components to data sources in the ViewModel, ensuring a clean and efficient UI 
+	update mechanism.
+	It's kept as passive as possible, focusing on the 'how' of presentation.
+3)ViewModel: 
+	Acts as a mediator between the View and Model. 
+	It holds the logic, processes the data, and exposes it in a format that the View can display. 
+	The ViewModel is lifecycle-aware, which means it survives configuration changes like screen rotations.
+	I’ve used LiveData and Kotlin Coroutines within ViewModels to manage asynchronous data loading and ensure 
+	the UI remains responsive.
+	It's the 'why' – the logic behind the presentation.
+
+-->MVVM Without Clean Architecture
+The components are structured as follows:
+	______________________________________________
+	UI: The user interface (Views) directly interacts with the ViewModel.
+	______________________________________________
+	Presenter/ViewModel (Business Logic): Contains all business logic and 
+	directly accesses the Repository.
+	______________________________________________
+	Repository: Acts as an abstraction for data sources and manages data operations.
+	DataSource: The actual source of data (e.g., local database, remote API).
+	______________________________________________
+	
+	Example:
+	______________________________________________
+	UI- LoginActivity or LoginFragment
+	____________________________________________
+	Presenter/ViewModel (Business Logic)- LoginViewModel
+	______________________________________________
+	Repository
+	- LoginRepository
+	DataSource
+	- RemoteLoginDataSource (API calls)
+	- LocalLoginDataSource (Database or SharedPreferences)
+	______________________________________________
 
 
-->Why is MVVM Used?
-1)Lifecycle Awareness: In Android, the ViewModel is lifecycle-aware, reducing memory leaks and ensuring efficient handling of UI-related data.
-2)Separation of Concerns: By decoupling the UI from the business logic, MVVM makes the code cleaner and easier to maintain.
-3)Scalability: MVVM makes it simpler to scale applications by maintaining a clear distinction between layers.
-4)Testability: Business logic is moved to the ViewModel, making it easier to write unit tests.
+-->MVVM With Clean Architecture
+The components are divided into layers for better separation of concerns:
+	______________________________________________
+	-Presentation Layer
+	UI: Contains Views (e.g., Activity, Fragment) interacting with the ViewModel.
+	Presentation Layer: The ViewModel handles UI-specific logic but delegates core business logic to UseCases.
+	Presenter/ViewModel
+	______________________________________________
+	-Domain/Business Layer
+	UseCases + Entity (Business Logic) Domain/Business Layer : Encapsulates business logic in reusable and testable UseCases
+			   Entities: Represent core business objects (models).
+	______________________________________________
+	-Data Layer
+	Repository: Interfaces with data sources (local or remote) and provides data to UseCases.
+	Data Layer: Implements the Repository interface and communicates with the DataSource.
+	DataSource: Actual implementation for fetching/storing data (e.g., API calls, database queries).
+	______________________________________________
 
+	Example:
+	______________________________________________
+	-Presentation Layer
+	UI
+	- LoginActivity or LoginFragment (UI)
+	- LoginViewModel (Presentation logic)
+	______________________________________________
+	-Domain/Business Layer
+	UseCases + Entity (Business Logic) Domain/Business Layer
+	- LoginUseCase (Handles login logic)
+	- UserEntity (Represents the user model)
+	______________________________________________
+	-Data Layer
+	Repository
+	Data Layer
+	- LoginRepository (Interface for data operations)
+	- LoginRepositoryImpl (Implementation of the repository)
+	DataSource
+	- RemoteLoginDataSource (Handles API calls)
+	- LocalLoginDataSource (Handles local data storage)
+	______________________________________________
+
+-->Advantages of MVVM [DTSRS]
+Data Binding: Simplifies UI updates by observing changes in the ViewModel.
+Testability: ViewModel is easy to test as it has no dependency on Android framework classes.
+Separation of Concerns: Clearly separates UI logic from business logic.
+Reusability: ViewModel logic can be reused across multiple Views.
+Scalability: Easy to scale applications due to modularity.
+Lifecycle Awareness: In Android, the ViewModel is lifecycle-aware, reducing memory leaks and ensuring efficient 
+handling of UI-related data.
 
 ->When to Use MVVM:
 When managing complex UIs with a lot of user interactions, dynamic data, and configuration changes.
