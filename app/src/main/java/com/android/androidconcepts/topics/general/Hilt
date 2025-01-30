@@ -1,0 +1,166 @@
+---------------------------------------------------------------------------------------------------------------------
+Annotation			Purpose												Example Usage
+@HiltAndroidApp		Initializes Hilt in the application class.			Application-level injection.
+@AndroidEntryPoint	Injects dependencies into Android components.		Activity, Fragment, Service, etc.
+@Inject				Requests or provides a dependency.					Constructor or field injection.
+@Provides			Defines how to provide a dependency.				Used in @Module.
+@Module				Groups @Provides or @Binds methods.					Provide dependencies explicitly.
+@InstallIn			Specifies the component scope for a module.			E.g., SingletonComponent.
+@Singleton			Ensures a single instance of a dependency.			Used with @Provides or @Inject.
+@HiltViewModel		Injects dependencies into ViewModels.				Works with ViewModelComponent.
+@Binds				Binds an interface to an implementation.			For interfaces with complex constructors.
+@Qualifier			Differentiates between bindings of the same type.	Annotates specific bindings.
+---------------------------------------------------------------------------------------------------------------------
+Hilt is a dependency injection (DI) library for Android that simplifies the setup and use of Dagger.
+It provides various annotations to define the scope, lifecycle, and behavior of dependencies in an Android application.
+Here's an overview of the key Hilt annotations and their uses:
+
+--Core Hilt Annotations
+1. @HiltAndroidApp
+Purpose: Initializes Hilt in an application.
+Use: Annotate the Application class to trigger Hilt’s code generation and make the app container available.
+Example:
+@HiltAndroidApp
+class MyApplication : Application()
+
+2. @AndroidEntryPoint
+Purpose: Indicates that Hilt should provide dependencies for an Android component (e.g., Activity, Fragment, Service, etc.).
+Use: Annotate Activities, Fragments, or other components to inject dependencies into them.
+Example:
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+    @Inject lateinit var myDependency: MyDependency
+}
+
+3. @Inject
+Purpose: Specifies how Hilt provides dependencies. Used for constructor or field injection.
+Use:
+Annotate constructors of classes you want to provide as dependencies.
+Inject dependencies into fields or properties.
+Example:
+class MyRepository @Inject constructor(private val apiService: ApiService)
+
+4. @Provides
+Purpose: Specifies a method in a @Module that provides a dependency.
+Use: Define how to create dependencies when you cannot use constructor injection.
+Example:
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+    @Provides
+    fun provideApiService(): ApiService {
+        return ApiService.create()
+    }
+}
+
+5. @Singleton
+Purpose: Indicates that a dependency should have a single instance in the application scope.
+Use: Combine with @Provides or @Inject for singleton dependencies.
+Example:
+@Provides
+@Singleton
+fun provideDatabase(app: Application): AppDatabase {
+    return Room.databaseBuilder(app, AppDatabase::class.java, "app.db").build()
+}
+
+
+--Scope Annotations
+
+6. @ActivityRetainedScoped
+Purpose: Defines a dependency that lives as long as the Activity lifecycle but is retained across configuration changes.
+Use: For dependencies that are used in ViewModels.
+Example:
+@ActivityRetainedScoped
+class MyViewModel @Inject constructor(private val repository: MyRepository)
+
+7. @ViewModelScoped
+Purpose: Indicates that the dependency is scoped to a ViewModel.
+Use: For dependencies that are only required within a ViewModel.
+Example:
+@ViewModelScoped
+class MyRepository @Inject constructor()
+
+8. @FragmentScoped
+Purpose: Specifies that a dependency is scoped to the lifecycle of a Fragment.
+Use: For Fragment-specific dependencies.
+Example:
+@FragmentScoped
+class MyFragmentDependency @Inject constructor()
+
+9. @ActivityScoped
+Purpose: Specifies that a dependency is scoped to the lifecycle of an Activity.
+Use: For Activity-specific dependencies.
+Example:
+@ActivityScoped
+class MyActivityDependency @Inject constructor()
+
+10. @ServiceScoped
+Purpose: Indicates that the dependency is scoped to the lifecycle of a Service.
+Use: For dependencies in Services.
+Example:
+@ServiceScoped
+class MyServiceDependency @Inject constructor()
+
+--Module Annotations
+11. @Module
+Purpose: Indicates that a class provides dependencies.
+Use: Annotate a class and include methods with @Provides to supply dependencies.
+Example:
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+    @Provides
+    fun provideHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder().build()
+    }
+}
+
+12. @InstallIn
+Purpose: Specifies the Hilt component into which a module is installed.
+Use: Define the scope of the provided dependencies.
+Example:
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule
+
+13. @Binds
+Purpose: Specifies an abstract method that tells Hilt which implementation to use for a given interface.
+Use: Replace @Provides when the return type is an interface.
+Example:
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds
+    abstract fun bindRepository(
+        implementation: MyRepositoryImpl
+    ): MyRepository
+}
+
+--Other Annotations
+14. @Qualifier
+Purpose: Differentiates between multiple bindings of the same type.
+Use: Create custom annotations to specify which implementation to use.
+Example:
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class RemoteDataSource
+
+@Provides
+@RemoteDataSource
+fun provideRemoteDataSource(): DataSource {
+    return RemoteDataSourceImpl()
+}
+
+15. @EntryPoint
+Purpose: Used for manual dependency injection in classes that Hilt does not directly support (e.g., ContentProviders or BroadcastReceivers).
+Use: Annotate an interface for Hilt to provide dependencies.
+Example:
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface MyEntryPoint {
+    fun getMyDependency(): MyDependency
+}
+
+-------------------------------------------------------------------------------------------------------------------
+
+

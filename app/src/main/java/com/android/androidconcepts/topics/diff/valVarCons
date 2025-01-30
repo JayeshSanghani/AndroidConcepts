@@ -1,0 +1,10 @@
+-->val	var	and const(MRISCMU)
+Feature					val									var									const
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Mutability				Immutable reference					Mutable reference					Immutable
+Reassignment			Not allowed							Allowed								Not allowed
+Initialization			At runtime							At runtime							At compile time
+Scope					Local, class-level, or top-level	Local, class-level, or top-level	Top-level or object declarations only
+Compile-time constant	No									No									Yes
+Mutable objects			Can reference mutable objects		Can reference mutable objects		Cannot reference objects
+Usage in annotations	Not allowed							Not allowed							Allowed

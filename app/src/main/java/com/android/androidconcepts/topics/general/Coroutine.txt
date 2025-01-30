@@ -1,0 +1,247 @@
+-> Coroutine
+Coroutine is concurrency design pattern that we can use on android to simplify the code that execute asynchronously.
+Coroutine helps to manage long running task that might otherwise block main thread and cause your app to become unresponsive.
+
+-> Why Use Dispatchers?
+	-UI Responsiveness: Offloading heavy or long-running tasks to Dispatchers.IO or Dispatchers.Default ensures the main thread remains responsive.
+	-Performance: Dispatchers efficiently manage threads, reducing overhead and improving app performance.
+	-Thread-Safe Concurrency: Ensures tasks execute in the correct thread context.
+
+
+-> Switching Between Dispatchers
+	You can switch between dispatchers using withContext. This allows you to perform background work on one dispatcher (e.g., IO) and then update the UI on the Main dispatcher.
+	Example:
+	fun fetchDataAndDisplay() {
+	    CoroutineScope(Dispatchers.Main).launch {
+	        val data = withContext(Dispatchers.IO) { 
+	            fetchDataFromDatabase() // Background thread
+	        }
+	        textView.text = data // Main thread
+	    }
+	}
+
+
+-> Kotlin provides three dispatchers to specify where the coroutine should run.
+
+1) Dispatchers.Main
+2) Dispatchers.IO
+3) Dispatchers.Default
+4) Dispatchers.Unconfined
+
+
+1) Dispatchers.Main
+	-Main should be used any for Interacting with UI and performing quick work.
+	-Typically used for tasks that interact with the UI (e.g., updating views or handling user input).
+	Example:
+	launch(Dispatchers.Main) {
+    // Code here runs on the main thread
+	    textView.text = "Hello from the Main Thread!"
+	}
+
+2) Dispatchers.IO
+	-IO is optimized perform disk or network I/O outside of the Main thread.
+	-It uses a shared thread pool, designed for blocking operations.
+	Example:
+	launch(Dispatchers.IO) {
+	    val data = fetchDataFromNetwork() // Simulated I/O operation
+	    withContext(Dispatchers.Main) {
+	        textView.text = data // Switch back to the main thread
+	    }
+	}
+
+3) Dispatchers.Default
+	-Default  is optimized to perform cpu intensive work outside to the main thread.
+	-Executes coroutines on a shared pool of background threads.
+	Example:
+	launch(Dispatchers.Default) {
+	    val result = performHeavyComputation()
+	    withContext(Dispatchers.Main) {
+	        textView.text = result
+	    }
+	}
+
+4) Dispatchers.Unconfined
+	Starts the coroutine in the caller’s thread but does not confine it to a specific thread. 
+	It may resume on a different thread.Typically used for debugging or specific scenarios where 
+	thread confinement isn’t needed.
+	Example:
+	launch(Dispatchers.Unconfined) {
+	    println("Running on thread: ${Thread.currentThread().name}")
+	}
+
+-> Coroutine builers
+1) launch	
+	Purpose: Launches a new coroutine without returning a result (fire-and-forget).
+	Returns: Job	
+	Use Case: Fire-and-forget tasks.
+	UI updates, background tasks, or other independent operations.
+	Example:
+	fun main() = runBlocking {
+	    val job = launch {
+	        println("Coroutine launched!")
+	        delay(1000L)
+	        println("Task complete!")
+	    }
+	    println("Waiting for job...")
+	    job.join() // Wait for the coroutine to finish
+	    println("Job finished.")
+	}
+
+2) async
+	Purpose: Launches a new coroutine that returns a result (similar to Future or Promise).	
+	Returns: Deferred<T>	T
+	Use Case: asks that need to return a result. 
+	Calculations, API calls, or any task needing a result.
+	Example:
+	fun main() = runBlocking {
+	    val deferred = async {
+	        delay(1000L)
+	        "Hello from async!"
+	    }
+	    println("Waiting for result...")
+	    println("Result: ${deferred.await()}")
+	}
+
+3) runBlocking	
+	Purpose: Bridges regular blocking code with coroutines.
+	Returns: Nothing	
+	Use Case: Blocking code integration/testing. 
+	Testing coroutine code or scripting.
+	Example:
+	fun main() {
+	    runBlocking {
+	        println("Start of runBlocking")
+	        launch {
+	            delay(500L)
+	            println("Coroutine inside runBlocking")
+	        }
+	        println("End of runBlocking")
+	    }
+	}
+
+
+4) withContext	
+	Purpose: Switches the coroutine to a different dispatcher/context.
+	Returns: Result of block	
+	Use Case: Switching dispatcher/context.
+	Example:
+	fun main() = runBlocking {
+	    println("Running on thread: ${Thread.currentThread().name}")
+	    withContext(Dispatchers.IO) {
+	        println("Switched to IO dispatcher on thread: ${Thread.currentThread().name}")
+	    }
+	    println("Back to main thread: ${Thread.currentThread().name}")
+	}
+
+5) produce
+	Purpose: Creates a coroutine that produces a stream of values using a channel.
+	Returns: ReceiveChannel	
+	Use Case: Producing streams of values.
+	Example:
+	fun main() = runBlocking {
+	    val producer = produce {
+	        for (i in 1..5) {
+	            send(i) // Send values to the channel
+	            delay(500L)
+	        }
+	    }
+	    for (value in producer) {
+	        println("Received: $value")
+	    }
+	}
+
+
+-> Coroutine scopes
+1) Global Scope
+2) Lifecycle-Aware Scopes
+3) Viewmodel Scope
+4) Coroutine Scope
+5) Superwiser Scope 
+
+1) GlobalScope
+	Description: A global, application-wide scope for launching coroutines.
+	Key Features:
+	-Coroutines live as long as the application does.
+	-No lifecycle management.
+	-Typically avoided unless necessary (e.g., background tasks that outlive components).
+	Use Case: Long-running background tasks.
+	Example:
+	fun main() {
+	    GlobalScope.launch {
+	        delay(1000L)
+	        println("Running in GlobalScope!")
+	    }
+	    Thread.sleep(2000L) // Wait for coroutine to finish
+	}
+
+2) Lifecycle-Aware Scopes
+	Description: Scoped to Android lifecycle components such as Activity, Fragment, or ViewModel.
+	Key Features:
+	Automatically cancels coroutines when the component is destroyed.
+	Use Case: Android development.
+	Examples:
+	class MyActivity : AppCompatActivity() {
+	    override fun onCreate(savedInstanceState: Bundle?) {
+	        super.onCreate(savedInstanceState)
+	        lifecycleScope.launch {
+	            delay(1000L)
+	            println("Data fetched in Activity!")
+	        }
+	    }
+	}
+
+3) Viewmodel Scope
+	Description: Tied to the lifecycle of a ViewModel. This is good choice for coroutine that need to live as long as the data 		viewmodel manages.
+	Key Features:
+	Automatically cancels coroutines when the component is destroyed.
+	Use Case: Android development.
+	Examples:
+	class MyViewModel : ViewModel() {
+	    fun fetchData() {
+	        viewModelScope.launch {
+	            delay(1000L)
+	            println("Data fetched in ViewModel!")
+	        }
+	    }
+	}
+
+4) CoroutineScope
+	Description: A general-purpose scope for launching coroutines tied to a given context.
+	Key Features:
+	Can be used to create custom coroutine scopes.
+	Ideal for grouping related coroutines.
+	Use Case: Custom scopes for specific tasks or components.
+	Example:
+	import kotlinx.coroutines.*
+
+	class MyCoroutineScope : CoroutineScope {
+	    private val job = Job()
+	    override val coroutineContext = Dispatchers.Main + job
+
+	    fun fetchData() {
+	        launch {
+	            delay(1000L)
+	            println("Data fetched!")
+	        }
+	    }
+
+	    fun clear() {
+	        job.cancel() // Cancel all coroutines in this scope
+	    }
+	}
+
+5) Superwiser Scope 
+	A scope that create a superwiser job for its children.
+	Unlike regular coroutine scope, if one child coroutine fails, the others are not cancelled
+
+
+
+
+
+
+
+
+
+
+
+

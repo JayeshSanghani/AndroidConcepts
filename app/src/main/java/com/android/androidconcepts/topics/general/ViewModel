@@ -4,10 +4,10 @@ https://medium.com/@KaushalVasava/viewmodels-internal-working-in-android-a-full-
 ->ViewModel
 
   1.What is ViewModel
-  	ViewModel class is designed to store and manage UI-related data in a lifecycle conscious way.It is the main component
-  	in the MVVM architecture.
-  	ViewModel can be created with activity context or fragment context.When a ViewModel object is created, it is stored
-  	inside Activity OR FragmentManager.
+  	ViewModel class is designed to store and manage UI-related data in a lifecycle conscious way.
+  	It is the main component in the MVVM architecture.
+  	ViewModel can be created with activity context or fragment context.When a ViewModel object is created,
+  	it is stored inside Activity OR FragmentManager.
   2.Advantages of using View Model
   	Lifecycle aware: Viewmodel is lifecycle aware. It is automatically cleared when the lifecycle they are observing gets permanently destroyed.
   	Hold and share UI data: Viewmodel holds all the UI data which are exposed to UI handling classes via live data. These data can be shared
@@ -83,12 +83,13 @@ https://medium.com/@KaushalVasava/viewmodels-internal-working-in-android-a-full-
 how this works:
 
 1. The Lifecycle Problem
-When an Android activity or fragment undergoes a configuration change (like a screen rotation), the system typically
-destroys and recreates the Activity or Fragment. This causes the loss of any data or UI state stored
-in the activity or fragment.
+When an Android activity or fragment undergoes a configuration change (like a screen rotation),
+the system typically destroys and recreates the Activity or Fragment. This causes the loss of any data or
+UI state stored in the activity or fragment.
 
 2. How ViewModel Solves This
-The ViewModel class is designed to outlive the activity or fragment lifecycle. Here's how it works under the hood:
+The ViewModel class is designed to outlive the activity or fragment lifecycle.
+Here's how it works under the hood:
 
 Step-by-Step Process
 Activity/Fragment Recreation on Configuration Change: When a configuration change occurs (e.g., rotation),

@@ -1,0 +1,15 @@
+-->	Constructor in kotlin
+--What is a Constructor in Kotlin?
+	Constructor is a special function used to initialize an object. Kotlin provides two types of constructors:
+	1)Primary Constructor: Declared in the class header and is concise.
+	2)Secondary Constructor: Defined inside the class body and provides more flexibility.
+
+--Why Use Constructors?
+	To initialize object properties when the object is created.
+	To enforce constraints or validations during object creation.
+	To provide multiple ways of creating objects with different initial states.
+
+--When to Use Constructors?
+	Primary Constructor: Use when the class requires straightforward initialization with a fixed set of properties.
+	Secondary Constructor: Use when additional initialization logic is needed or when you need to handle multiple
+	ways of creating an object (overloaded constructors).

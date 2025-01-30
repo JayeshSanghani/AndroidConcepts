@@ -1,0 +1,34 @@
+-->	Sealed  class
+	A sealed class in Kotlin is a special type of class that restricts the inheritance hierarchy. It allows you to define a
+	limited set of subclasses. All the direct subclasses of a sealed class must be declared in the same file as the sealed class.
+	This makes it useful for representing restricted or closed hierarchies where the number of subclasses is known and finite.
+	Example:
+		Think of a sealed class representing the result of a network request
+			sealed class NetworkResult {
+				data class Success(val data: String) : NetworkResult()
+				data class Error(val exception: Exception) : NetworkResult()
+				object Loading : NetworkResult()
+			}
+		Here, NetworkResult has three possible states: Success, Error, and Loading.
+		You ensure all cases are handled explicitly in a when block:
+			fun handleResult(result: NetworkResult) {
+				when (result) {
+					is NetworkResult.Success -> println("Data: ${result.data}")
+					is NetworkResult.Error -> println("Error: ${result.exception.message}")
+					NetworkResult.Loading -> println("Loading...")
+				}
+			}
+
+--Benefits:
+	-Type Safety: Ensures that all possible subclasses are handled.
+	-Exhaustiveness: The compiler enforces checks, reducing runtime errors.
+	-Improved Readability: Helps create clear and maintainable code for finite-state scenarios.
+
+--When to Use:
+	-Representing states in state machines or workflows.
+	-Handling UI states in MVVM/MVI architecture.
+	-Encapsulating error handling, responses, or commands.
+
+--Why Not Use Abstract Classes or Interfaces?
+	Abstract classes/interfaces allow unrestricted subclassing, which can lead to unhandled cases or unintended behavior.
+	Sealed classes enforce stricter control.

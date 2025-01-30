@@ -1,0 +1,10 @@
+-->ViewModel vs Singleton
+Feature						ViewModel							Singleton
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Lifecycle-aware				Yes (Scoped to Activity/Fragment)	No (Exists for the entire app lifecycle)
+Survives config changes?	Yes									No
+Use case					UI-related data management			Global state management
+Memory handling				Cleared when the UI is destroyed	Persists throughout the app’s lifecycle
+Thread safety				Thread-safe by default				Needs manual synchronization for multi-threading
+Risk of memory leaks?		Low									High (if context is stored improperly)
+Dependency Management		Works well with DI					Can cause tight coupling
