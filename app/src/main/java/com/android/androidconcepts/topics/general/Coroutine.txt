@@ -70,6 +70,12 @@ Coroutine helps to manage long running task that might otherwise block main thre
 	}
 
 -> Coroutine builers
+1) launch
+2) async
+3) runBlocking
+4) withContext	
+5) produce
+
 1) launch	
 	Purpose: Launches a new coroutine without returning a result (fire-and-forget).
 	Returns: Job	
@@ -234,8 +240,79 @@ Coroutine helps to manage long running task that might otherwise block main thre
 	A scope that create a superwiser job for its children.
 	Unlike regular coroutine scope, if one child coroutine fails, the others are not cancelled
 
+----------------------------
+When to Use Coroutines?
+1) Network Calls (API Requests)
+Coroutines help run network operations on a background thread without blocking the UI.
+suspend fun fetchData(): Response<Data> {
+    return withContext(Dispatchers.IO) {
+        apiService.getData()
+    }
+}
+
+2) Database Operations (Room, SQLite)
+Accessing databases should be done off the main thread to avoid UI freezes.
+suspend fun insertData(data: DataEntity) {
+    withContext(Dispatchers.IO) {
+        database.dao().insert(data)
+    }
+}
+
+3) Background Processing (Heavy Computation)
+Running heavy tasks in Dispatchers.Default to avoid blocking the main thread.
+suspend fun processData(): List<Result> {
+    return withContext(Dispatchers.Default) {
+        computeHeavyTask()
+    }
+}
+
+4) Handling UI Updates in ViewModel
+Coroutines in viewModelScope ensure tasks are canceled when the ViewModel is cleared.
+class MyViewModel : ViewModel() {
+    fun fetchData() {
+        viewModelScope.launch {
+            val result = repository.getData()
+            _uiState.value = result
+        }
+    }
+}
+
+5) Repeating Background Work (Timers, Polling)
+delay() in coroutines is better than Thread.sleep() as it doesn’t block the thread.
+fun startPolling() {
+    viewModelScope.launch {
+        while (true) {
+            fetchData()
+            delay(5000) // Wait for 5 seconds
+        }
+    }
+}
+
+6) Parallel Execution (Using async)
+Running tasks concurrently using async with await().
+suspend fun fetchParallelData() {
+    coroutineScope {
+        val data1 = async { apiService.getData1() }
+        val data2 = async { apiService.getData2() }
+        val result = data1.await() + data2.await()
+    }
+}
+
+7) Lifecycle-Aware Coroutines
+Using lifecycleScope in activities/fragments ensures coroutines are canceled when the lifecycle ends.
+lifecycleScope.launch {
+    val result = repository.getData()
+    textView.text = result
+}
 
 
+---------
+Benefits/ Features of Coroutines
+Coroutines is our recommended solution for asynchronous programming on Android.
+1) Lightweight: You can run many coroutines on a single thread due to support for suspension, which doesn't block the thread where the coroutine is running. Suspending saves memory over blocking while supporting many concurrent operations.
+2) Fewer memory leaks: Use structured concurrency to run operations within a scope.
+3) Built-in cancellation support: Cancellation is propagated automatically through the running coroutine hierarchy.
+4) Jetpack integration: Many Jetpack libraries include extensions that provide full coroutines support. Some libraries also provide their own coroutine scope that you can use for structured concurrency.
 
 
 
