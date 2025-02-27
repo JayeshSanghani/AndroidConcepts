@@ -1,74 +1,81 @@
 -> Coroutine
 Coroutine is concurrency design pattern that we can use on android to simplify the code that execute asynchronously.
 Coroutine helps to manage long running task that might otherwise block main thread and cause your app to become unresponsive.
+----------------------------------
+When to Use Coroutines?
+1) Network Calls (API Requests)
+Coroutines help run network operations on a background thread without blocking the UI.
+suspend fun fetchData(): Response<Data> {
+    return withContext(Dispatchers.IO) {
+        apiService.getData()
+    }
+}
 
--> Why Use Dispatchers?
-	-UI Responsiveness: Offloading heavy or long-running tasks to Dispatchers.IO or Dispatchers.Default ensures the main thread remains responsive.
-	-Performance: Dispatchers efficiently manage threads, reducing overhead and improving app performance.
-	-Thread-Safe Concurrency: Ensures tasks execute in the correct thread context.
+2) Database Operations (Room, SQLite)
+Accessing databases should be done off the main thread to avoid UI freezes.
+suspend fun insertData(data: DataEntity) {
+    withContext(Dispatchers.IO) {
+        database.dao().insert(data)
+    }
+}
+
+3) Background Processing (Heavy Computation)
+Running heavy tasks in Dispatchers.Default to avoid blocking the main thread.
+suspend fun processData(): List<Result> {
+    return withContext(Dispatchers.Default) {
+        computeHeavyTask()
+    }
+}
+
+4) Handling UI Updates in ViewModel
+Coroutines in viewModelScope ensure tasks are canceled when the ViewModel is cleared.
+class MyViewModel : ViewModel() {
+    fun fetchData() {
+        viewModelScope.launch {
+            val result = repository.getData()
+            _uiState.value = result
+        }
+    }
+}
+
+5) Repeating Background Work (Timers, Polling)
+delay() in coroutines is better than Thread.sleep() as it doesn’t block the thread.
+fun startPolling() {
+    viewModelScope.launch {
+        while (true) {
+            fetchData()
+            delay(5000) // Wait for 5 seconds
+        }
+    }
+}
+
+6) Parallel Execution (Using async)
+Running tasks concurrently using async with await().
+suspend fun fetchParallelData() {
+    coroutineScope {
+        val data1 = async { apiService.getData1() }
+        val data2 = async { apiService.getData2() }
+        val result = data1.await() + data2.await()
+    }
+}
+
+7) Lifecycle-Aware Coroutines
+Using lifecycleScope in activities/fragments ensures coroutines are canceled when the lifecycle ends.
+lifecycleScope.launch {
+    val result = repository.getData()
+    textView.text = result
+}
 
 
--> Switching Between Dispatchers
-	You can switch between dispatchers using withContext. This allows you to perform background work on one dispatcher (e.g., IO) and then update the UI on the Main dispatcher.
-	Example:
-	fun fetchDataAndDisplay() {
-	    CoroutineScope(Dispatchers.Main).launch {
-	        val data = withContext(Dispatchers.IO) { 
-	            fetchDataFromDatabase() // Background thread
-	        }
-	        textView.text = data // Main thread
-	    }
-	}
+----------------------------------
+Benefits/ Features of Coroutines
+Coroutines is our recommended solution for asynchronous programming on Android.
+1) Lightweight: You can run many coroutines on a single thread due to support for suspension, which doesn't block the thread where the coroutine is running. Suspending saves memory over blocking while supporting many concurrent operations.
+2) Fewer memory leaks: Use structured concurrency to run operations within a scope.
+3) Built-in cancellation support: Cancellation is propagated automatically through the running coroutine hierarchy.
+4) Jetpack integration: Many Jetpack libraries include extensions that provide full coroutines support. Some libraries also provide their own coroutine scope that you can use for structured concurrency.
 
-
--> Kotlin provides three dispatchers to specify where the coroutine should run.
-
-1) Dispatchers.Main
-2) Dispatchers.IO
-3) Dispatchers.Default
-4) Dispatchers.Unconfined
-
-
-1) Dispatchers.Main
-	-Main should be used any for Interacting with UI and performing quick work.
-	-Typically used for tasks that interact with the UI (e.g., updating views or handling user input).
-	Example:
-	launch(Dispatchers.Main) {
-    // Code here runs on the main thread
-	    textView.text = "Hello from the Main Thread!"
-	}
-
-2) Dispatchers.IO
-	-IO is optimized perform disk or network I/O outside of the Main thread.
-	-It uses a shared thread pool, designed for blocking operations.
-	Example:
-	launch(Dispatchers.IO) {
-	    val data = fetchDataFromNetwork() // Simulated I/O operation
-	    withContext(Dispatchers.Main) {
-	        textView.text = data // Switch back to the main thread
-	    }
-	}
-
-3) Dispatchers.Default
-	-Default  is optimized to perform cpu intensive work outside to the main thread.
-	-Executes coroutines on a shared pool of background threads.
-	Example:
-	launch(Dispatchers.Default) {
-	    val result = performHeavyComputation()
-	    withContext(Dispatchers.Main) {
-	        textView.text = result
-	    }
-	}
-
-4) Dispatchers.Unconfined
-	Starts the coroutine in the caller’s thread but does not confine it to a specific thread. 
-	It may resume on a different thread.Typically used for debugging or specific scenarios where 
-	thread confinement isn’t needed.
-	Example:
-	launch(Dispatchers.Unconfined) {
-	    println("Running on thread: ${Thread.currentThread().name}")
-	}
-
+----------------------------------
 -> Coroutine builers
 1) launch
 2) async
@@ -156,7 +163,75 @@ Coroutine helps to manage long running task that might otherwise block main thre
 	    }
 	}
 
+----------------------------------
+-> Why Use Dispatchers?
+	-UI Responsiveness: Offloading heavy or long-running tasks to Dispatchers.IO or Dispatchers.Default ensures the main thread remains responsive.
+	-Performance: Dispatchers efficiently manage threads, reducing overhead and improving app performance.
+	-Thread-Safe Concurrency: Ensures tasks execute in the correct thread context.
 
+
+-> Switching Between Dispatchers
+	You can switch between dispatchers using withContext. This allows you to perform background work on one dispatcher (e.g., IO) and then update the UI on the Main dispatcher.
+	Example:
+	fun fetchDataAndDisplay() {
+	    CoroutineScope(Dispatchers.Main).launch {
+	        val data = withContext(Dispatchers.IO) { 
+	            fetchDataFromDatabase() // Background thread
+	        }
+	        textView.text = data // Main thread
+	    }
+	}
+
+
+-> Kotlin provides three dispatchers to specify where the coroutine should run.
+
+1) Dispatchers.Main
+2) Dispatchers.IO
+3) Dispatchers.Default
+4) Dispatchers.Unconfined
+
+
+1) Dispatchers.Main
+	-Main should be used any for Interacting with UI and performing quick work.
+	-Typically used for tasks that interact with the UI (e.g., updating views or handling user input).
+	Example:
+	launch(Dispatchers.Main) {
+    // Code here runs on the main thread
+	    textView.text = "Hello from the Main Thread!"
+	}
+
+2) Dispatchers.IO
+	-IO is optimized perform disk or network I/O outside of the Main thread.
+	-It uses a shared thread pool, designed for blocking operations.
+	Example:
+	launch(Dispatchers.IO) {
+	    val data = fetchDataFromNetwork() // Simulated I/O operation
+	    withContext(Dispatchers.Main) {
+	        textView.text = data // Switch back to the main thread
+	    }
+	}
+
+3) Dispatchers.Default
+	-Default  is optimized to perform cpu intensive work outside to the main thread.
+	-Executes coroutines on a shared pool of background threads.
+	Example:
+	launch(Dispatchers.Default) {
+	    val result = performHeavyComputation()
+	    withContext(Dispatchers.Main) {
+	        textView.text = result
+	    }
+	}
+
+4) Dispatchers.Unconfined
+	Starts the coroutine in the caller’s thread but does not confine it to a specific thread. 
+	It may resume on a different thread.Typically used for debugging or specific scenarios where 
+	thread confinement isn’t needed.
+	Example:
+	launch(Dispatchers.Unconfined) {
+	    println("Running on thread: ${Thread.currentThread().name}")
+	}
+
+----------------------------------
 -> Coroutine scopes
 1) Global Scope
 2) Lifecycle-Aware Scopes
@@ -240,79 +315,8 @@ Coroutine helps to manage long running task that might otherwise block main thre
 	A scope that create a superwiser job for its children.
 	Unlike regular coroutine scope, if one child coroutine fails, the others are not cancelled
 
-----------------------------
-When to Use Coroutines?
-1) Network Calls (API Requests)
-Coroutines help run network operations on a background thread without blocking the UI.
-suspend fun fetchData(): Response<Data> {
-    return withContext(Dispatchers.IO) {
-        apiService.getData()
-    }
-}
+----------------------------------
 
-2) Database Operations (Room, SQLite)
-Accessing databases should be done off the main thread to avoid UI freezes.
-suspend fun insertData(data: DataEntity) {
-    withContext(Dispatchers.IO) {
-        database.dao().insert(data)
-    }
-}
-
-3) Background Processing (Heavy Computation)
-Running heavy tasks in Dispatchers.Default to avoid blocking the main thread.
-suspend fun processData(): List<Result> {
-    return withContext(Dispatchers.Default) {
-        computeHeavyTask()
-    }
-}
-
-4) Handling UI Updates in ViewModel
-Coroutines in viewModelScope ensure tasks are canceled when the ViewModel is cleared.
-class MyViewModel : ViewModel() {
-    fun fetchData() {
-        viewModelScope.launch {
-            val result = repository.getData()
-            _uiState.value = result
-        }
-    }
-}
-
-5) Repeating Background Work (Timers, Polling)
-delay() in coroutines is better than Thread.sleep() as it doesn’t block the thread.
-fun startPolling() {
-    viewModelScope.launch {
-        while (true) {
-            fetchData()
-            delay(5000) // Wait for 5 seconds
-        }
-    }
-}
-
-6) Parallel Execution (Using async)
-Running tasks concurrently using async with await().
-suspend fun fetchParallelData() {
-    coroutineScope {
-        val data1 = async { apiService.getData1() }
-        val data2 = async { apiService.getData2() }
-        val result = data1.await() + data2.await()
-    }
-}
-
-7) Lifecycle-Aware Coroutines
-Using lifecycleScope in activities/fragments ensures coroutines are canceled when the lifecycle ends.
-lifecycleScope.launch {
-    val result = repository.getData()
-    textView.text = result
-}
-
-
----------
-Benefits/ Features of Coroutines
-Coroutines is our recommended solution for asynchronous programming on Android.
-1) Lightweight: You can run many coroutines on a single thread due to support for suspension, which doesn't block the thread where the coroutine is running. Suspending saves memory over blocking while supporting many concurrent operations.
-2) Fewer memory leaks: Use structured concurrency to run operations within a scope.
-3) Built-in cancellation support: Cancellation is propagated automatically through the running coroutine hierarchy.
-4) Jetpack integration: Many Jetpack libraries include extensions that provide full coroutines support. Some libraries also provide their own coroutine scope that you can use for structured concurrency.
 
 
 
