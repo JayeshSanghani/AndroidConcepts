@@ -316,8 +316,98 @@ Coroutines is our recommended solution for asynchronous programming on Android.
 	Unlike regular coroutine scope, if one child coroutine fails, the others are not cancelled
 
 ----------------------------------
+Error Handling Techniques in Coroutines
+	
+1) try-catch	
+2) CoroutineExceptionHandler	
+3) supervisorScope	
+4) try-catch with async.await()	
+5) catch in Flow
+
+1) try-catch	
+✅ Use try-catch inside a coroutine to handle exceptions.
+❌ Only works if the exception occurs inside the coroutine.
+💡 When to use?
+When handling specific coroutine failures
+Use it inside a coroutine (launch or async)
+lifecycleScope.launch {
+    try {
+        val result = fetchData()  // Network call or database operation
+        println("Data: $result")
+    } catch (e: Exception) {
+        println("Error: ${e.message}")  // Handle error properly
+    }
+}
+
+2) CoroutineExceptionHandler	
+✅ Captures uncaught exceptions at the coroutine scope level.
+❌ Only works with launch, not with async (since async returns a Deferred<T>).
+💡 When to use?
+Handling errors at a global coroutine level
+Works well for launch, but not async
+val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+    println("Caught exception: ${throwable.message}")
+}
+
+lifecycleScope.launch(exceptionHandler) {
+    throw Exception("Something went wrong!")  // Will be caught by CoroutineExceptionHandler
+}
 
 
+3) supervisorScope
+✅ Unlike coroutineScope, if one child fails, others continue running instead of canceling everything.
+💡 When to use?
+When you want independent tasks where failure of one should not cancel others
+lifecycleScope.launch {
+    supervisorScope {
+        launch {
+            throw Exception("Error in task 1")  // Fails, but other coroutines continue
+        }
+        launch {
+            delay(1000)
+            println("Task 2 completed")  // This will still execute
+        }
+    }
+}
+
+
+4) try-catch with async.await()	
+✅ CoroutineExceptionHandler does not work with async, so you must use try-catch.
+💡 When to use?
+When using async, wrap await() calls in try-catch.
+lifecycleScope.launch {
+    val data1 = async {
+        try {
+            fetchData1()  // May throw an error
+        } catch (e: Exception) {
+            "Default Data 1"  // Return a default value if error occurs
+        }
+    }
+    val data2 = async { fetchData2() }  // No error handling (may fail)
+
+    val result = data1.await() + data2.await()  // Will crash if data2 fails
+    println("Result: $result")
+}
+
+5) catch in Flow
+✅ In Flow, exceptions must be caught inside catch {}.
+💡 When to use?
+When working with Kotlin Flows for data streaming
+fun fetchDataFlow(): Flow<String> = flow {
+    emit("Fetching data...")
+    delay(1000)
+    throw Exception("Network Error!")  // Will be caught by `catch`
+}.catch { e ->
+    emit("Error: ${e.message}")  // Handle the exception
+}
+
+lifecycleScope.launch {
+    fetchDataFlow().collect { println(it) }
+}
+
+
+
+----------------------------------
 
 
 
