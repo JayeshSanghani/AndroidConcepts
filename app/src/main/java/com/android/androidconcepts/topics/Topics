@@ -1,5 +1,7 @@
 Jetpack Compose Interview Questions:
-
+-> LaunchedEffect
+-> State hosting
+-> Compose navigation
 -> Jetpack Compose vs Android View System.
 -> Explain the concept of declarative UI in Jetpack Compose.
 -> Declarative UI vs Imperative UI.

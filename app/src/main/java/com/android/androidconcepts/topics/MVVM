@@ -120,12 +120,6 @@ data from multiple sources like a remote API or a local database.
 2)LiveData Updates View: The ViewModel exposes data as LiveData, which the View observes. When data changes, the UI updates automatically.
 3)User Interaction: User actions are passed from the View to the ViewModel, which handles the logic.
 
-
-->Advantages of MVVM
-Reduced Code in Activity/Fragment: All business logic is in the ViewModel, keeping the View lightweight.
-Reactive Updates: Changes in the Model automatically reflect in the UI.
-Lifecycle Awareness: Android's ViewModel survives configuration changes like screen rotations.
-
 ->Disadvantages of MVVM
 Steeper Learning Curve: For developers new to architectural patterns.
 Boilerplate Code: Can result in additional code for simple applications.

@@ -1,0 +1,35 @@
+-->Flow
+Flow is asynchronous data stream that emits values to the collector and get completed with or without exception.
+
+
+-->Flow vs State flow vs Shared flow
+Feature						Flow										State flow									Shared flow
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Type					Cold stream										Hot stream									Hot stream
+Behavior				Emits values only when collected.				Holds the latest emitted value.				Can emit multiple values to multiple collectors.
+Replay Behavior			No replay. New collectors receive nothing.		Always has an initial/default value.		Can be configured to replay past values.
+State Retention			No state retention.								Retains the last emitted value.				Can be configured to retain values.
+Multiple Collectors		Each collector gets a new stream.				All collectors receive the latest value.	All collectors share the same stream.
+Use Case				One-time data fetch, network calls.				UI state management (like LiveData).		Event-based scenarios (e.g., UI events, notifications).
+Emission Behavior		Values are produced when collected.				Always has an active value.					Can be configured for buffering & replay.
+Backpressure Handling	Supports buffer(), conflate().					Collects only the latest value.				Allows configuring buffering strategies.
+
+
+Feature	                StateFlow	                                        SharedFlow
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Type	                Hot stream (State Holder).	                        Hot stream (Event Broadcaster).
+Initial Value	        Requires an initial value.	                        Does not require an initial value.
+Value Retention	        Always holds the latest value.	                    Does not store the latest value unless replay is set.
+Replay Behavior	        Only the latest value is available.	                Can be configured to replay past values (e.g., replay = 3).
+Multiple Collectors	    All collectors receive the same latest value.	    Collectors receive values based on replay settings.
+State or Event?	        Best for state (UI state, LiveData alternative).	Best for events (one-time UI events like Snackbar, Navigation).
+Emission Behavior	    Updates value using value or emit().	            Emits values using emit(), supports buffering.
+Concurrency Handling	Drops values if not collected immediately.	        Can buffer values if needed.
+Use Case	            UI state management 	                            Event-driven communication (e.g., sending UI events, logging).
+                        (e.g., text field updates, progress state).
+
+HotFlow	                                                ColdFlow
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Hot flow emits data even when there is no collector.	Cold flow emits data when there is a collector.
+Hot flow can store data.                                Cold flow does not store data.
+Hot flow have multiple collectors(1 to N).              Cold flow can't have multiple collectors(1 flow for 1 collector).

@@ -1,0 +1,39 @@
+
+
+
+-->Example
+
+fun main() {
+    val user = User("Alice", 25, "alice@example.com")
+
+    // 1. let - Operates on the result of a lambda and returns its result
+    val isAdult = user.let {
+        println("Checking if ${it.name} is an adult.")
+        it.age >= 18
+    }
+    println("Is ${user.name} an adult? $isAdult")
+
+    // 2. run - Executes a block of code and returns its result
+    val userInfo = user.run {
+        "Name: $name, Age: $age, Email: $email"
+    }
+    println("User Info: $userInfo")
+
+    // 3. apply - Configures an object and returns the object itself
+    val updatedUser = user.apply {
+        age = 26
+        email = "alice.new@example.com"
+    }
+    println("Updated User: $updatedUser")
+
+    // 4. also - Performs additional operations on an object and returns the object itself
+    val loggedUser = user.also {
+        println("Logging user details: $it")
+    }
+
+    // 5. with - Operates on an object within a block and returns a result
+    val description = with(user) {
+        "User $name is $age years old and can be reached at $email."
+    }
+    println(description)
+}

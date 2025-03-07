@@ -1,0 +1,238 @@
+------------------------------------------------------------------------------------------
+-->Find duplicate from list
+------------------------------------------------------------------------------------------
+fun main() {
+    val numbers = listOf(1, 2, 3, 2, 4, 5, 6, 3, 7, 8, 1)
+    println(findDuplicateNo(numbers))
+}
+
+fun findDuplicateNo(numbers: List<Int>): List<Int> {
+    val duplicateList = mutableListOf<Int>()
+    val list = mutableListOf<Int>()
+
+    for (number in numbers) {
+        if (!duplicateList.contains(number) && list.contains(number)) {
+            duplicateList.add(number)
+        } else {
+            list.add(number)
+        }
+    }
+    return duplicateList
+}
+
+------------------------------------------------------------------------------------------
+-->Sum of all digits
+------------------------------------------------------------------------------------------
+fun main() {
+    val sum = sumOfDigits(1234)
+    println(sum)
+}
+
+fun sumOfDigits(number: Int): Int {
+    var num = number
+    var sum = 0
+
+    while (num > 0){
+        val digit = num % 10
+        sum += digit
+        num /= 10
+        println(digit)
+    }
+    return sum
+}
+
+------------------------------------------------------------------------------------------
+-->Find char and digits from string
+------------------------------------------------------------------------------------------
+fun main() {
+    val str = "Hello how are you? my no is 9157123467"
+    var digitCount = 0
+    var charCount = 0
+    var spaceCount = 0
+
+    for (ch in str) {
+        when {
+            ch in 'A'..'Z' || ch in 'a'..'z' -> {
+                charCount++
+                println("Char: $ch")
+            }
+            ch in '0'..'9' -> {
+                digitCount++
+                println("Digit: $ch")
+            }
+            ch == ' ' -> {
+                spaceCount++
+                println("Space: [ ]")
+            }
+            else -> {
+                println("Other: $ch")
+            }
+        }
+    }
+
+    println("Total char count: $charCount")
+    println("Total digit count: $digitCount")
+    println("Total space count: $spaceCount")
+}
+
+------------------------------------------------------------------------------------------
+-->Swipe two string
+------------------------------------------------------------------------------------------
+fun main() {
+    var hello = "Hello"
+    var how = "how"
+    hello = how.also{
+        how = hello
+    }
+    println(hello)
+    println(how)
+}
+
+------------------------------------------------------------------------------------------
+-->Each character of string and counting occurrence
+------------------------------------------------------------------------------------------
+ fun main() {
+    val str = "hello how are you?"
+    val charCounts = countChar(str)
+    for((char, count) in charCounts){
+        println("$char->$count")
+    }
+
+}
+
+fun countChar(str: String): Map<Char, Int> {
+    val charCount = mutableMapOf<Char, Int>()
+    for(char in str){
+        charCount[char] = charCount.getOrDefault(char, 0) + 1
+    }
+    return charCount
+}
+
+------------------------------------------------------------------------------------------
+-->Second largest no
+------------------------------------------------------------------------------------------
+fun main() {
+     val numbers = arrayListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+     var largest = Int.MIN_VALUE
+     var secondLargest = Int.MIN_VALUE
+
+    for (num in numbers){
+        if(num > largest){
+            secondLargest = largest
+            largest = num
+        }else if(num > secondLargest && num != largest){
+             secondLargest = num
+        }
+    }
+
+    if (secondLargest != Int.MIN_VALUE) {
+		println("Second largest number is: $secondLargest")
+    } else {
+        println("No second largest number found.")
+    }
+}
+
+------------------------------------------------------------------------------------------
+-->Reverse digit
+------------------------------------------------------------------------------------------
+fun main() {
+    val num = 12345
+    val reversedNum = reverseDigits(num)
+    println("Reversed Number: $reversedNum")
+}
+
+fun reverseDigits(num: Int): Int {
+    var number = num
+    var reversedNum = 0
+
+    while (number > 0) {
+        val digit = number % 10  // Extract the last digit
+        reversedNum = reversedNum * 10 + digit  // Append it to reversedNum
+        number /= 10  // Remove the last digit
+    }
+
+    return reversedNum
+}
+
+------------------------------------------------------------------------------------------
+-->Vowels to upper case
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-->Factorial no
+------------------------------------------------------------------------------------------
+fun main() {
+    val num = 5
+    val factorialNum = factorial(num)
+    println("Factorial of $num: $factorialNum")
+}
+
+fun factorial(n: Int): Long {
+    return if (n == 0 || n == 1) {
+        1
+    } else {
+        n * factorial(n - 1)
+    }
+}
+
+------------------------------------------------------------------------------------------
+-->Fibonacci series
+------------------------------------------------------------------------------------------
+fun main() {
+    val num = 10
+    val fibonacciSeries = mutableListOf<Int>()
+    for (i in 0 until num) {
+        fibonacciSeries.add(fibonacci(i))
+    }
+    println("Fibonacci Series: ${fibonacciSeries.joinToString(", ")}")
+}
+
+fun fibonacci(n: Int): Int {
+    return if(n <= 1){
+        n
+    } else {
+        fibonacci(n-1) + fibonacci(n-2)
+    }
+}
+
+
+fun fibonacci(n: Int): Int {
+    return if(n <= 1){
+        n
+    } else {
+        fibonacci(n-1) + fibonacci(n-2)
+    }
+}
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
