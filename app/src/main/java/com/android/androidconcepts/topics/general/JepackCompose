@@ -1,0 +1,706 @@
+
+--------------------------------------------------------------------------------------------------------------------
+What is Jetpack Compose?
+--------------------------------------------------------------------------------------------------------------------
+Jetpack Compose is a modern declarative UI toolkit for android development.
+Instead of telling the system step-by-step how to build the UI, you describe what the UI should look like, and Compose takes care of
+the rest. When the app's state changes, Compose automatically updates the UI to reflect those changes.
+Jetpack Compose allows Android developers to build UIs with less code, making the development process faster and more efficient.
+
+
+--------------------------------------------------------------------------------------------------------------------
+Key Features of Jetpack Compose:(DSIMAPR)
+--------------------------------------------------------------------------------------------------------------------
+1) Declarative UI:
+	Define UI components using composable functions instead of XML.
+	This is a core principle. Developers describe the desired UI state, and Compose handles the updates when the state changes.
+	This simplifies UI development and reduces the chance of errors.
+2) State Management:
+	Compose promotes effective state management, which is very important for dynamic UI's.
+3) Interoperability:
+	Compose can be integrated with existing Android views and other Jetpack libraries. This allows for gradual adoption in existing projects.
+4) Material Design Support:
+	Compose has built-in support for Material Design, which helps developers create visually appealing and consistent UIs.
+5) Animations:
+	Compose makes it easy to add animations to your UI, which can improve the user experience.
+6) Performance Optimized:
+	Uses smart recompositions to update only the necessary UI parts.
+7) Rich Tooling:
+	Android Studio provides excellent support for Compose, including live previews, code completion, and debugging tools.
+	This enhances the developer workflow.
+
+
+--------------------------------------------------------------------------------------------------------------------
+Jetpack Compose vs Traditional View based OR Imperative vs. Declarative UI (for the Email App Example)
+--------------------------------------------------------------------------------------------------------------------
+
+🔹 Imperative UI (Traditional Android View-based Approach)
+--------------------------------------------------------------------------------------------------------------------
+Using imperative programming, we’d typically update the UI manually based on state changes:
+fun updateEnvelopeIcon(count: Int) {
+    val envelopeIcon = findViewById<ImageView>(R.id.envelopeIcon)
+    val badgeView = findViewById<TextView>(R.id.badgeView)
+
+    when {
+        count > 99 -> envelopeIcon.setImageResource(R.drawable.envelope_fire)
+        count > 0 -> envelopeIcon.setImageResource(R.drawable.envelope_paper)
+        else -> envelopeIcon.setImageResource(R.drawable.envelope_empty)
+    }
+
+    if (count > 0) {
+        badgeView.text = count.toString()
+        badgeView.visibility = View.VISIBLE
+    } else {
+        badgeView.visibility = View.GONE
+    }
+}
+💡 Issues with this approach:
+We manually track the UI state and transitions.
+We need to ensure previous states are properly cleared when the state changes.
+This approach can lead to bugs in complex scenarios.
+
+🔹 Declarative UI (Jetpack Compose)
+--------------------------------------------------------------------------------------------------------------------
+Now, using Jetpack Compose, we describe what the UI should look like for each state, and the framework automatically handles state transitions:
+@Composable
+fun BadgedEnvelope(count: Int) {
+    Envelope(fire = count > 99, paper = count > 0) {
+        if (count > 0) {
+            Badge(text = "$count")
+        }
+    }
+}
+
+✅ Advantages of this approach:
+No manual state tracking – We only describe the UI for the current state.
+Simpler and more readable – The UI reacts to state changes automatically.
+No need to worry about previous states – Compose handles recomposition.
+More scalable – If new states are added, they can be integrated easily.
+
+--------------------------------------------------------------------------------------------------------------------
+State Management in Jetpack Compose
+--------------------------------------------------------------------------------------------------------------------
+State management in Jetpack Compose refers to handling and preserving the UI state efficiently across recompositions.
+Since Compose is declarative, the UI is automatically redrawn when the state changes.
+Proper state management ensures that UI elements are updated only when necessary, improving performance and usability.
+
+Types of State in Jetpack Compose
+1) Remember API (remember) : Local State
+	Stores state in memory and survives recompositions.
+2) Remember with Saveable (rememberSaveable) : Local State
+	Saves the state during configuration changes like screen rotations.
+3) State Hoisting (Lifting State Up) :Hoisted State
+	The state is maintained in a higher-level composable and passed as parameters.
+4) ViewModel (viewModel) : UI State
+	State is managed outside the UI in a ViewModel, surviving configuration changes.
+
+
+1) Example: Simple Counter App (Using remember)
+	@Composable
+	fun CounterScreen() {
+		var count by remember { mutableStateOf(0) }  // State stored in memory  // State is local to this composable
+
+		Column(
+			modifier = Modifier.fillMaxSize(),
+			horizontalAlignment = Alignment.CenterHorizontally,
+			verticalArrangement = Arrangement.Center
+		) {
+			Text(text = "Count: $count", fontSize = 24.sp)
+
+			Button(onClick = { count++ }) {
+				Text("Increase")
+			}
+		}
+	}
+
+	✅ Explanation
+	remember { mutableStateOf(0) } keeps count only in memory.
+	When count changes, Compose recomposes the UI.
+	But if the screen is rotated, count resets to 0 (solved below).
+	✔ Advantage: Simple and easy to manage.
+	❌ Limitation: Does not survive configuration changes (fixed with rememberSaveable).
+
+2) Example: Counter with rememberSaveable
+	To retain state during configuration changes:
+	@Composable
+	fun CounterScreen() {
+		var count by rememberSaveable { mutableStateOf(0) } // Saves state on config changes
+
+		Column(
+			modifier = Modifier.fillMaxSize(),
+			horizontalAlignment = Alignment.CenterHorizontally,
+			verticalArrangement = Arrangement.Center
+		) {
+			Text(text = "Count: $count", fontSize = 24.sp)
+
+			Button(onClick = { count++ }) {
+				Text("Increase")
+			}
+		}
+	}
+	✅ Now the state is preserved across screen rotations.
+
+3) Example: Counter with rememberSaveable
+	Instead of managing state inside the composable, lift it up:
+	@Composable
+	fun CounterScreen() {
+	    var count by rememberSaveable { mutableStateOf(0) }
+	    Counter(count, onIncrement = { count++ })  // Passing state & event handler
+	}
+
+	@Composable
+	fun Counter(count: Int, onIncrement: () -> Unit) {
+	    Column(
+	        modifier = Modifier.fillMaxSize(),
+	        horizontalAlignment = Alignment.CenterHorizontally,
+	        verticalArrangement = Arrangement.Center
+	    ) {
+	        Text(text = "Count: $count", fontSize = 24.sp)
+
+	        Button(onClick = onIncrement) {
+	            Text("Increase")
+	        }
+	    }
+	}
+	✅ Advantages of State Hoisting
+	Reusability: Counter() can be used elsewhere.
+	Separation of Concerns: UI and state logic are separate.
+
+4) Example: Using ViewModel for State Management
+	For complex apps, use ViewModel:
+	class CounterViewModel : ViewModel() {
+		var count by mutableStateOf(0)
+			private set  // Prevent modification from outside
+
+		fun increment() {
+			count++
+		}
+	}
+
+	@Composable
+	fun CounterScreen(viewModel: CounterViewModel = viewModel()) {
+		Counter(count = viewModel.count, onIncrement = { viewModel.increment() })
+	}
+	✅ Benefits
+	Survives process death.
+	Cleaner state management.
+
+--------------------------------------------------------------------------------------------------------------------
+Understanding Composition, Recomposition, and Disposal in Jetpack Compose
+--------------------------------------------------------------------------------------------------------------------
+Jetpack Compose is a declarative UI framework that efficiently updates the UI by handling composition, recomposition, and disposal.
+
+1) Composition
+Composition is the initial process where the UI elements are created and added to the UI tree.
+It happens when a Composable function is executed for the first time.
+Think of it as the initial blueprint creation.
+
+Example: Basic Composition
+@Composable
+fun Greeting(name: String) {
+    Text(text = "Hello, $name!")
+}
+
+@Composable
+fun MyScreen() {
+    Greeting(name = "John")
+}
+
+🔹 What happens?
+The Greeting Composable is called inside MyScreen(), creating a new composition.
+The UI tree now contains a Text node displaying "Hello, John!".
+
+
+2) Recomposition
+Recomposition occurs when the UI state changes, causing only the affected parts of the UI tree to be updated instead of redrawing everything.
+This optimization is crucial for performance.
+Think of it as updating the blueprint when the materials change.
+
+Example: Recomposition with State
+@Composable
+fun Counter() {
+    var count by remember { mutableStateOf(0) }
+
+    Column {
+        Text(text = "Count: $count")
+        Button(onClick = { count++ }) {
+            Text("Increment")
+        }
+    }
+}
+
+🔹 What happens?
+Initially, count = 0, so "Count: 0" is displayed.
+When the button is clicked, count increases, triggering recomposition.
+Only the Text(text = "Count: $count") Composable is updated; the Button is not recreated.
+
+3)  Disposal
+Disposal happens when a Composable is removed from the Composition tree.
+This is important for cleaning up resources (e.g., stopping a timer or closing a database connection).
+This is like the destruction of a section of the building from the blueprint.
+
+Example: Disposal with DisposableEffect
+@Composable
+fun TimerEffect() {
+    DisposableEffect(Unit) {
+        val timer = Timer()
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                Log.d("Timer", "Tick")
+            }
+        }, 0, 1000)
+
+        onDispose {
+            Log.d("Timer", "Cancelled")
+            timer.cancel()
+        }
+    }
+}
+🔹 What happens?
+A Timer starts ticking every second when TimerEffect() enters the Composition.
+If TimerEffect() is removed from the Composition (e.g., due to navigation or conditional rendering), onDispose is called, stopping the timer.
+
+Putting It All Together
+@Composable
+fun TimerScreen() {
+    var showTimer by remember { mutableStateOf(true) }
+
+    Column {
+        Button(onClick = { showTimer = !showTimer }) {
+            Text("Toggle Timer")
+        }
+
+        if (showTimer) {
+            TimerEffect()  // Composed when showTimer is true, disposed when false
+        }
+    }
+}
+When the button is clicked, showTimer toggles between true and false.
+When showTimer == false, TimerEffect() is removed, triggering disposal.
+When showTimer == true, TimerEffect() is recreated (composition).
+
+--------------------------------------------------------------------------------------------------------------------
+Reusing a Composable in Jetpack Compose
+--------------------------------------------------------------------------------------------------------------------
+
+In Jetpack Compose, a Composable is a function that defines a piece of UI.
+One of the core principles of Compose is reusability—by designing Composables to be modular and reusable,
+you can create maintainable and scalable UI components.
+
+To reuse a Composable, follow these practices:
+
+1) Extract UI into separate Composables functions
+	Instead of writing large Composable functions, break down UI elements into smaller, reusable Composables.
+	Example: Reusable Button
+	@Composable
+	fun CustomButton(text: String, onClick: () -> Unit) {
+		Button(onClick = onClick) {
+			Text(text)
+		}
+	}
+
+	// Reusing the Composable
+	@Composable
+	fun ScreenContent() {
+		Column {
+			CustomButton("Click Me") { println("Button clicked!") }
+			CustomButton("Submit") { println("Submitted!") }
+		}
+	}
+	Here, CustomButton can be reused multiple times with different parameters.
+
+2) Use Parameters for Customization
+	Composable functions should accept parameters to allow customization while maintaining reusability.
+	Example: Reusable Card Component
+	@Composable
+	fun ProfileCard(name: String, imageUrl: String) {
+		Card(
+			modifier = Modifier.padding(8.dp).fillMaxWidth(),
+			elevation = 4.dp
+		) {
+			Row(verticalAlignment = Alignment.CenterVertically) {
+				Image(
+					painter = rememberAsyncImagePainter(imageUrl),
+					contentDescription = null,
+					modifier = Modifier.size(40.dp)
+				)
+				Spacer(modifier = Modifier.width(8.dp))
+				Text(name, fontWeight = FontWeight.Bold)
+			}
+		}
+	}
+
+	// Reusing it
+	@Composable
+	fun ProfileList() {
+		Column {
+			ProfileCard("Alice", "https://example.com/alice.jpg")
+			ProfileCard("Bob", "https://example.com/bob.jpg")
+		}
+	}
+
+3) Use Higher-Order Functions for More Flexibility
+	A Composable can take another Composable as a parameter to make it even more reusable.
+	Example: Customizable Layout
+	@Composable
+	fun CustomContainer(content: @Composable () -> Unit) {
+		Card(
+			modifier = Modifier.padding(16.dp),
+			elevation = 8.dp
+		) {
+			Box(modifier = Modifier.padding(16.dp)) {
+				content()
+			}
+		}
+	}
+
+	// Reusing it with different content
+	@Composable
+	fun ExampleScreen() {
+		Column {
+			CustomContainer { Text("Hello, World!") }
+			CustomContainer { Button(onClick = {}) { Text("Click Me") } }
+		}
+	}
+
+4) Utilize State Hoisting for Better Reusability
+	Instead of managing state inside a Composable, let the parent control it.
+	Example: Reusable Counter
+	@Composable
+	fun Counter(count: Int, onIncrement: () -> Unit) {
+		Row {
+			Text("Count: $count", modifier = Modifier.padding(8.dp))
+			Button(onClick = onIncrement) {
+				Text("Increase")
+			}
+		}
+	}
+
+	// Usage with state hoisting
+	@Composable
+	fun CounterScreen() {
+		var count by remember { mutableStateOf(0) }
+
+		Counter(count) { count++ }
+	}
+	Here, Counter doesn’t manage its own state, making it reusable in different contexts.
+
+5)  Create Themed Components
+	If your app has a design system, encapsulate styles inside reusable Composables.
+	Example: Custom Text Style
+	@Composable
+	fun TitleText(text: String) {
+		Text(text, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+	}
+
+	// Usage
+	@Composable
+	fun HomeScreen() {
+		Column {
+			TitleText("Welcome")
+			TitleText("Jetpack Compose")
+		}
+	}
+
+
+--------------------------------------------------------------------------------------------------------------------
+Side-effects in Compose(LrSDpds))
+--------------------------------------------------------------------------------------------------------------------
+
+1) LaunchedEffect
+2) remember CoroutineScope
+3) SideEffect
+4) DisposableEffect
+5) produceState
+6) derivedStateOf
+7) snapshotFlow
+
+1) LaunchedEffect (Run coroutines on first composition or key change)
+	Used for launching a coroutine that runs once or when a key changes.
+	Commonly used for API calls or animations.
+	Cancels and restarts when the key changes.
+
+	Example:
+	@Composable
+	fun FetchData(userId: String) {
+		var data by remember { mutableStateOf("") }
+
+		LaunchedEffect(userId) { // Runs when userId changes
+			data = fetchUserData(userId)  // API call
+		}
+
+		Text("User Data: $data")
+	}
+
+2) rememberCoroutineScope (Launch coroutines on event-based actions)
+	Creates a CoroutineScope that is tied to the lifecycle of the composable.
+
+	Example:
+	@Composable
+	fun DownloadButton() {
+		val coroutineScope = rememberCoroutineScope()
+
+		Button(onClick = {
+			coroutineScope.launch {
+				downloadFile()  // Runs in background // Perform a coroutine-based task
+			}
+		}) {
+			Text("Download")
+		}
+	}
+
+3) SideEffect (Runs on every recomposition)
+	Allows you to execute code after every successful recomposition.
+
+	Example:
+	@Composable
+	fun LogRecompositions(count: Int) {
+		SideEffect {
+			Log.d("Recomposition", "Count: $count")
+		}
+
+		Text("Count: $count")
+	}
+
+4) DisposableEffect (For cleanup and lifecycle management)
+	Similar to LaunchedEffect, but provides a onDispose block that is executed when the effect is disposed
+	(either because the composable is removed or the keys have changed).
+
+	Example:
+	@Composable
+	fun SensorListener(sensorManager: SensorManager) {
+		DisposableEffect(Unit) { // Runs once
+			val listener = SensorEventListener { /* Handle sensor data */ }
+			sensorManager.registerListener(listener)
+
+			onDispose { // Cleanup when removed
+				sensorManager.unregisterListener(listener)
+			}
+		}
+	}
+
+5) produceState (Converts asynchronous values into Compose State.)
+	Converts non-Compose state (Flow, LiveData) into Compose state.
+	Can run suspend functions inside it.
+
+	Example:
+	@Composable
+	fun UserProfile(userId: String): State<User> {
+		return produceState(initialValue = User(), userId) {
+			value = fetchUserData(userId)  // API call
+		}
+	}
+
+6) derivedStateOf (Optimize expensive calculations)
+	Creates a State object that derives its value from other State objects.
+	Prevents unnecessary recompositions.
+
+	Example:
+	@Composable
+	fun OptimizedList(input: List<String>) {
+		val sortedList by remember { derivedStateOf { input.sorted() } }
+
+		LazyColumn {
+			items(sortedList) { item -> Text(item) }
+		}
+	}
+
+	@Composable
+	fun MyComposable(list: List<Item>) {
+		val hasItems = remember { derivedStateOf { list.isNotEmpty() } }
+		if (hasItems.value) {
+			Text("List has items")
+		} else {
+			Text("List is empty")
+		}
+	}
+
+7) snapshotFlow (Convert Compose state to Flow)
+	Used when you need to observe Compose state in coroutines.
+	Converts Compose state (State<T>) into a Flow<T>.
+
+	Example:
+	@Composable
+	fun ObserveScrollState(scrollState: ScrollState) {
+		LaunchedEffect(Unit) {
+			snapshotFlow { scrollState.value }
+				.collect { position ->
+					Log.d("Scroll", "Scrolled to: $position")
+				}
+		}
+	}
+
+------------------------------------------------------------------------
+Jetpack Compose functions through a structured lifecycle that includes three main phases: Composition, Layout, and Drawing.
+Each Compose UI element must go through the three phases to be fully rendered on the screen.
+
+		   What?	   Whare?	   How?
+Data -> Composition -> Layout -> Drawing  -> UI
+
+------------------------------------------------------------------------
+How Data is populating using Coroutine?
+Fetching and displaying a list of users from a API
+
+Understanding the Problem: Blocking Operations
+Imagine you want to display a list of users in your Android application. This typically involves making a network request to a server.
+Network requests are inherently slow and can block the main thread of your application. If the main thread is blocked,
+your UI will become unresponsive, leading to a poor user experience (the dreaded "Application Not Responding" or ANR error).
+
+The Coroutine Solution: Asynchronous Operations
+Kotlin coroutines provide a way to perform long-running operations asynchronously without blocking the main thread.
+They allow you to write asynchronous code that looks and feels like synchronous, sequential code.
+
+
+Defining the Data Model (User.kt)
+data class User(
+	val id: Int,
+	val name: String,
+	val email: String
+)
+
+RetrofitInstance.kt (Singleton for Retrofit)
+object RetrofitInstance {
+    private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
+
+    val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+}
+
+Defining the API Interface (ApiService.kt)
+interface ApiService {
+    @GET("/users")
+    suspend fun getUsers(): List<User>
+}
+
+Implementing the Repository (UserRepository.kt)
+class UserRepository {
+    private val apiService: ApiService = RetrofitInstance.retrofit.create(ApiService::class.java)
+
+    suspend fun getUsers(): List<User> {
+        return apiService.getUsers()
+    }
+}
+
+class UserViewModel(private val repository: UserRepository) : ViewModel() {
+
+    private val _users = MutableLiveData<List<User>>()
+    val users: LiveData<List<User>> = _users
+
+    fun fetchUsers() {
+        viewModelScope.launch {
+            try {
+                val userList = repository.getUsers()
+                _users.value = userList  // UI observes this LiveData
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+}
+
+class MainActivity : AppCompatActivity() {
+
+    private val viewModel: UserViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        viewModel.fetchUsers()
+
+        viewModel.users.observe(this) { userList ->
+            // Update RecyclerView or UI with userList
+        }
+    }
+}
+
+------------------------------------------------------------------------
+One Scenario Based question : If the OEM has provided the necessary information for the HMI (Human-Machine Interface) application
+but the Vehicle HAL (Hardware Abstraction Layer) implementation is delayed, here's how you could approach the situation?
+Answer : Mock Data Implementation.
+
+1. Implement a Mock HAL Layer: Since the actual Vehicle HAL is not available, create a mock HAL that simulates the expected data and behavior. This mock layer should closely follow the interface contracts defined in the OEM's specifications.
+2. Use Configurable Mock Data: Ensure that the mock data is configurable (via JSON, XML, or other formats), so that different scenarios (e.g., low fuel, door open, speed variations) can be simulated without changing the code.
+3. Validate HMI Integration: Use the mock data to test and validate the HMI application logic, UI behavior, and data bindings. This allows parallel development and ensures that the HMI layer is ready for integration once the actual HAL is available.
+4. Maintain Abstraction & Replace Easily: Structure your code so that switching from the mock implementation to the actual HAL is seamless. Use interfaces or dependency injection so the mock and real implementations can be swapped without code changes in the HMI layer.
+5. Collaborate and Sync with HAL Team: Maintain close communication with the HAL development team to understand timelines, data structure changes, and APIs so your mock stays aligned with the real implementation.
+6. Plan for Integration & Testing: Once the HAL becomes available, schedule integration testing to validate the HMI against real vehicle data and handle edge cases not covered by mock scenarios.
+
+OR
+In such a scenario, I would go ahead with a Mock Data Implementation approach.
+Since the HAL is not yet available, I would create a mock version of the Vehicle HAL based on the interface specifications
+provided by the OEM. This mock would simulate the expected vehicle signals and responses — such as speed, fuel level, battery status, etc.
+
+To keep it flexible, I’d design the mock to be configurable, either through files like JSON/XML or through a simple UI,
+so that I can simulate different scenarios without changing the code. This helps in thoroughly testing how the HMI reacts
+to various vehicle states.
+
+I’d also ensure that the HMI communicates with the mock HAL through the same interface as the real HAL, using proper abstraction
+and dependency injection. This way, once the actual HAL is available, we can switch over with minimal changes.
+
+This approach allows parallel development, continuous validation of the HMI layer, and early detection of integration issues —
+keeping the project on track despite the HAL delay.
+
+
+------------------------------------------------------------------------
+Your HMI Experience and Questions Related to that, How Application get the Vehicle Data ?
+Ans : App -->CarAPI-->CarService-->VHAL
+App → CarPropertyManager → CarService → VHAL → Vehicle ECU (via CAN) → returns value up the chain
+
+
+
+------------------------------------
+🔥 Jetpack Compose: The Future of UI in Android Development
+As Android developers, we’re always striving for cleaner, more efficient code. Jetpack Compose takes us a step closer to modernizing UI design in Android apps by offering a fully declarative UI toolkit. 🌟
+
+Let’s break down Jetpack Compose and explore how it’s transforming the way we build user interfaces. 🚀
+
+📦 What is Jetpack Compose?
+🖌️ Key Features of Jetpack Compose:
+🔄 Imperative vs. Declarative UI
+
+Which UI approach do you prefer for your Android projects?
+Comment below and let me know! 👇
+
+#AndroidDevelopment #JetpackCompose #MobileDevelopment #DeclarativeUI #AndroidJetpack #Kotlin #AndroidDev #CleanCode
+
+
+----------------------------------------------------------
+✨ State Management in Jetpack Compose: A Quick Guide
+State management is the heart of building modern, scalable UIs — and with Jetpack Compose, it becomes even more powerful and intuitive! 💬
+
+In my latest Medium article, I break down:
+✅ What is State in Compose?
+✅ How to manage Local State with remember and rememberSaveable
+✅ What is Hoisted State (and why lifting state up matters!)
+✅ Managing complex UI State using ViewModel
+✅ Real-world code examples for better understanding
+
+How are you handling state in your Compose apps? Let’s discuss in the comments! 👇
+
+#AndroidDevelopment #JetpackCompose #Kotlin #StateManagement #MobileDevelopment #ComposeUI #MediumBlog
+
+----------------------------------------------------------
+🚀 Understanding Composition, Recomposition, and Disposal in Jetpack Compose 🎯
+
+Jetpack Compose introduces a powerful declarative UI model — but to truly harness its potential, it's important to understand the lifecycle of Composables:
+
+✅ Composition – This is where it all begins! Composables are first inserted into the UI tree.
+✅ Recomposition – When state changes, only the affected Composables are redrawn — efficiently updating the UI.
+✅ Disposal – When a Composable leaves the screen or becomes irrelevant, it is removed from the Composition, freeing up resources.
+
+🔍 Each stage plays a vital role in performance, memory management, and responsiveness in modern Android apps.
+
+📊 Here's a simple visual I created to make these concepts easier to grasp.
+💬 Have you encountered tricky state bugs or performance issues related to recomposition?
+
+Link : https://shorturl.at/cv9by  👇
+
+#JetpackCompose #AndroidDevelopment #Kotlin #MobileDev #UI #StateManagement #CleanArchitecture #ComposeUI
+
+----------------------------------------------------------
+

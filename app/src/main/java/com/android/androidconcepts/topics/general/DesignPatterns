@@ -5,6 +5,7 @@ https://sourcemaking.com/design_patterns/behavioral_patterns
 -->Design Patterns
     -Design patterns usually deal with objects.
     -A Design Pattern is a general, reusable solution to a commonly occurring problem within a given context.
+    -Design patterns are like "tools in a toolbox" for building better apps faster, with fewer mistakes.
 1.Creational patterns: How you create objects.
     Builder
     Dependency Injection
@@ -23,63 +24,62 @@ https://sourcemaking.com/design_patterns/behavioral_patterns
 
 ------------------------------------------------------------------------------------------------------------------------
 1.Creational patterns: How you create objects.
-->Builder
-Definition:
--By using Builder pattern you construct complex objects step by step.
--The pattern allows you to produce different types and representations of an object using the same construction code.
-Example1: House https://refactoring.guru/design-patterns/builder
-Example2: Default component
-    AlertDialog.Builder(this)
-      .setTitle("Sandwich Dialog")
-      .setMessage("Please use the spicy mustard.")
-      .setNegativeButton("No thanks") { dialogInterface, i ->
-        // "No thanks" action
-      }
-      .setPositiveButton("OK") { dialogInterface, i ->
-        // "OK" action
-      }
-      .show()
+1.1 Builder
+    Definition:
+    -By using Builder pattern you construct complex objects step by step.
+    -The pattern allows you to produce different types and representations of an object using the same construction code.
+    Example: Default component
+        AlertDialog.Builder(this)
+          .setTitle("Sandwich Dialog")
+          .setMessage("Please use the spicy mustard.")
+          .setNegativeButton("No thanks") { dialogInterface, i ->
+            // "No thanks" action
+          }
+          .setPositiveButton("OK") { dialogInterface, i ->
+            // "OK" action
+          }
+          .show()
     Pros:
--You can construct objects step-by-step, defer construction steps or run steps recursively.
--You can reuse the same construction code when building various representations of products.
--Single Responsibility Principle. You can isolate complex construction code from the business logic of the product.
-Cons:
--The overall complexity of the code increases since the pattern requires creating multiple new classes.
-  
--->Dependency Injection
-Definition:
--A design pattern where an object receives its dependencies from an external source.
--Dependency injection is technic where by one object supplies the dependency's of another object.
-Example: 
-@HiltViewModel
+    -You can construct objects step-by-step, defer construction steps or run steps recursively.
+    -You can reuse the same construction code when building various representations of products.
+    -Single Responsibility Principle. You can isolate complex construction code from the business logic of the product.
+    Cons:
+    -The overall complexity of the code increases since the pattern requires creating multiple new classes.
+
+1.2 Dependency Injection
+    Definition:
+    -A design pattern where an object receives its dependencies from an external source.
+    -Dependency injection is technic where by one object supplies the dependency's of another object.
+    Example:
+    @HiltViewModel
     class MyViewModel @Inject constructor(private val repository: MyRepository) : ViewModel() {
         // ViewModel logic
     }
+Pros:
+-Loose Coupling: Classes are not tightly bound to their dependencies.
+-Easier Testing: Dependencies can easily be mocked or replaced.
+-Improved Code Reusability: Same classes can be reused with different dependencies.
+-Centralized Configuration: Manage dependencies at a single place (e.g., in Hilt Modules).
+-Follows SOLID Principles: Especially the Dependency Inversion Principle.
+-Lifecycle Awareness: DI frameworks integrate with Activity/Fragment lifecycles (Hilt manages scopes like @ActivityScoped, @ViewModelScoped).
+Cons:
+-Boilerplate Code: Some DI frameworks (like Dagger) require a lot of setup (Modules, Components).
+-Performance Overhead: Reflection-based DI (like Hilt's under-the-hood use of Dagger) can slightly affect app startup time if not optimized.
+-Steeper Learning Curve: Beginners may find DI concepts and frameworks (like Dagger or Hilt) complex initially.
 
 
--->Singleton
+1.3 Singleton
 -Definition: Singleton is a creational design pattern that lets you ensure that a class has only one instance,
 while providing a global access point to this instance.
-Example: 
-    public class SharedPrefsManager {
-        private static SharedPrefsManager instance;
-        private SharedPreferences prefs;
-
-        private SharedPrefsManager(Context context) {
-            prefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        }
-
-        public static synchronized SharedPrefsManager getInstance(Context context) {
-            if (instance == null) {
-                instance = new SharedPrefsManager(context);
-            }
-            return instance;
-        }
-
-        public void saveData(String key, String value) {
-            prefs.edit().putString(key, value).apply();
+Example:
+    object RetrofitClient {
+        val instance: Retrofit by lazy {
+            Retrofit.Builder()
+                .baseUrl("https://api.example.com/")
+                .build()
         }
     }
+
 Pros:
 -You can be sure that a class has only a single instance.
 -You gain a global access point to that instance.
@@ -95,13 +95,12 @@ overriding static methods is impossible in most languages, you will need to thin
 mock the singleton. Or just don’t write the tests. Or don’t use the Singleton pattern.
 
 
--->Factory
+1.4 Factory
 Definition:
 -Factory Method is a creational design pattern that provides an interface for creating objects in a superclass,
 but allows subclasses to alter the type of objects that will be created.
 -Factory pattern used when Creating objects without specifying the exact class.
-    Example1: Logistics app (Transport should be vis sea and road)
-    Example2: Suppose you have multiple Fragment types in your app and want to create them based on user input.
+    Example: Suppose you have multiple Fragment types in your app and want to create them based on user input.
     // Factory class
     public class FragmentFactory {
         public static Fragment createFragment(String type) {
@@ -132,7 +131,7 @@ The best case scenario is when you’re introducing the pattern into an existing
 
 ------------------------------------------------------------------------------------------------------------------------
 2.Structural patterns: How you compose objects.
--->Adapter
+2.1 Adapter
 Definition: Adapter is a structural design pattern that allows objects with incompatible interfaces to collaborate.
 Example:
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -159,10 +158,10 @@ Cons:
 Sometimes it’s simpler just to change the service class so that it matches the rest of your code.
 
 
--->Facade
+2.2 Facade
 Definition: Facade is a structural design pattern that provides a simplified interface to a library,
 a framework, or any other complex set of classes.
-Example: Square’s Retrofit is an open-source Android library that helps you implement the Facade pattern. You create an interface 
+Example: Square’s Retrofit is an open-source Android library that helps you implement the Facade pattern. You create an interface
     to provide API data to client classes like so:
     interface BooksApi {
       @GET("books")
@@ -177,7 +176,7 @@ Pros:
 Cons:
 -A facade can become a god object coupled to all classes of an app.
 
--->Decorator
+2.3 Decorator
 Definition: Adds responsibilities to an object dynamically without modifying its structure.
 Example: Decorating a TextView with SpannableString.
     SpannableString spannable = new SpannableString("Bold and Italic Text");
@@ -196,15 +195,15 @@ Cons:
 -The initial configuration code of layers might look pretty ugly.
 
 
--->Composite
+2.4 Composite
 Definition: Composite is a structural design pattern that lets you compose objects into tree structures and
 then work with these structures as if they were individual objects.
 Example: Android’s View hierarchy.
-    LinearLayout linearLayout = new LinearLayout(context);
-    Button button = new Button(context);
-    TextView textView = new TextView(context);
-    linearLayout.addView(button);
-    linearLayout.addView(textView);
+    val linearLayout = LinearLayout(context).apply {
+        orientation = LinearLayout.VERTICAL
+        addView(Button(context))
+        addView(TextView(context))
+    }
 Pros:
 -You can work with complex tree structures more conveniently: use polymorphism and recursion to your advantage.
 -Open/Closed Principle. You can introduce new element types into the app without breaking the existing code,
@@ -215,7 +214,7 @@ In certain scenarios, you’d need to overgeneralize the component interface, ma
 
 
 3.Behavioral patterns: How you coordinate object interactions.
--->Command
+3.1 Command
 Definition: Encapsulates a request as an object, allowing parameterization of clients with different requests.
 Example: Using OnClickListener to handle button clicks.
     button.setOnClickListener(v -> {
@@ -231,7 +230,7 @@ Pros:
 Cons:
 -The code may become more complicated since you’re introducing a whole new layer between senders and receivers.
 
--->Observer
+3.2 Observer
 Definition: Observer is a behavioral design pattern that lets you defines a dependency between objects
 so that when one changes state, all dependents are notified.
 Android Example: Using LiveData to observe data changes in ViewModel.
@@ -246,42 +245,29 @@ Pros:
 Cons:
 -Subscribers are notified in random order.
 
--->Strategy
-Definition: Strategy is a behavioral design pattern that lets you defines a family of algorithms and makes them interchangeable.
-Example: Implementing a sorting strategy for data in a list.
-    interface SortStrategy {
-        void sort(List<Integer> data);
+3.3 Strategy:
+Strategy is a behavioral design pattern that lets you defines a family of algorithms and makes them interchangeable.
+Example: Implementing a Layout strategy for data in a list.
+    interface LayoutStrategy {
+        fun apply(recyclerView: RecyclerView)
     }
 
-    class BubbleSort implements SortStrategy {
-        @Override
-        public void sort(List<Integer> data) {
-            // Bubble sort implementation
-        }
-    }
-
-    class QuickSort implements SortStrategy {
-        @Override
-        public void sort(List<Integer> data) {
-            // Quick sort implementation
+    class GridLayoutStrategy : LayoutStrategy {
+        override fun apply(recyclerView: RecyclerView) {
+            recyclerView.layoutManager = GridLayoutManager(recyclerView.context, 2)
         }
     }
 
-    class DataProcessor {
-        private SortStrategy strategy;
-
-        public DataProcessor(SortStrategy strategy) {
-            this.strategy = strategy;
-        }
-
-        public void setStrategy(SortStrategy strategy) {
-            this.strategy = strategy;
-        }
-
-        public void process(List<Integer> data) {
-            strategy.sort(data);
+    class LinearLayoutStrategy : LayoutStrategy {
+        override fun apply(recyclerView: RecyclerView) {
+            recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
         }
     }
+
+    Usage
+    val strategy: LayoutStrategy = GridLayoutStrategy()
+    strategy.apply(recyclerView)
+
 Pros:
 -You can swap algorithms used inside an object at runtime.
 -You can isolate the implementation details of an algorithm from the code that uses it.
@@ -292,14 +278,14 @@ Cons:
 the program with new classes and interfaces that come along with the pattern.
 -Clients must be aware of the differences between strategies to be able to select a proper one.
 
--->State
+3.4 State
 Definition: Allows an object to alter its behavior when its internal state changes.
 Example: MediaPlayer state transitions (Prepared, Playing, Paused)
-    MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.audio_file);
-    if (!mediaPlayer.isPlaying()) {
-        mediaPlayer.start(); // Changes to "Playing" state
+    val mediaPlayer = MediaPlayer.create(context, R.raw.audio_file)
+    if (!mediaPlayer.isPlaying) {
+        mediaPlayer.start()  // Changes to "Playing" state
     } else {
-        mediaPlayer.pause(); // Changes to "Paused" state
+        mediaPlayer.pause()  // Changes to "Paused" state
     }
 
 Pros:
@@ -310,3 +296,33 @@ Cons:
 -Applying the pattern can be overkill if a state machine has only a few states or rarely changes.
 
 ------------------------------------------------------------------------------------------------------------------------
+🔥 Mastering Android Design Patterns: A Must for Every Developer
+In today's fast-paced app development world, writing just working code isn't enough. We must write scalable, maintainable, and robust code — and that's exactly where Design Patterns shine! 🌟
+
+Today, let's dive into how we use Design Patterns in Android Development with real examples. 🚀
+📦 1.Creational patterns: How you create objects.
+    Builder
+    Dependency Injection
+    Singleton
+    Factory
+🏗️ 2.Structural patterns: How you compose objects.
+    Adapter
+    Facade
+    Decorator
+    Composite
+🔄 3.Behavioral patterns: How you coordinate object interactions.
+    Command
+    Observer
+    Strategy
+    State
+
+Which design pattern do you use most in your Android apps?
+Comment below! 👇
+
+https://shorturl.at/rYEch
+
+#AndroidDevelopment #MobileDevelopment #DesignPatterns #AndroidJetpack #CleanCode #SoftwareArchitecture
+
+
+Hey     ! Hope you're doing well.
+Just wanted to share a new article I published on Medium — thought it might be useful.

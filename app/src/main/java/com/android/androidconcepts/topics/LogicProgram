@@ -1,3 +1,84 @@
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-->
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-->FirstCharAfterRepeat
+------------------------------------------------------------------------------------------
+fun firstCharAfterRepeat(string: String): String {
+    val charCount = mutableMapOf<Char, Int>()
+
+    // Count the occurrences of each character
+    for (char in string) {
+        charCount[char] = charCount.getOrDefault(char, 0) + 1
+    }
+
+    // Find the first character with count 1
+    for (char in string) {
+        if (charCount[char] == 1) {
+            return char.toString()
+        }
+    }
+
+    return "No unique character"
+}
+
+fun main() {
+    val result = firstCharAfterRepeat("aabcd")
+    println(result) // Output: b
+}
+
+------------------------------------------------------------------------------------------
+-->Check if matching opening is present at the top of the stack
+// Input: s = "()"
+// Output: true
+// Input: s = "()[]{}"
+// Output: true
+// Input: s = "(]"
+// Output: false
+------------------------------------------------------------------------------------------
+fun main() {
+    // Example inputs and expected outputs:
+    println(testInput("()"))       // true
+    println(testInput("()[]{}"))   // true
+    println(testInput("(]"))       // false
+}
+
+fun testInput(s: String): Boolean {
+    val arr = ArrayDeque<Char>()
+    val map = mapOf(')' to '(', ']' to '[', '}' to '{')
+
+    for (char in s) {
+        if (char in map.values) {
+            arr.addLast(char)  // Push opening bracket
+        } else if (char in map.keys) {
+            // Check if matching opening is present at the top of the stack
+            if (arr.isEmpty() || arr.removeLast() != map[char]) {
+                return false
+            }
+        }
+    }
+
+    return arr.isEmpty()  // Return true only if stack is empty (all matched)
+}
+
 ------------------------------------------------------------------------------------------
 -->Find duplicate from list
 ------------------------------------------------------------------------------------------

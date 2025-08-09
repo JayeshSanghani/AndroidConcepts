@@ -14,7 +14,7 @@
 		}
 	}
 	Usage in Android:
-	Fetching data from a network.
+
 	Performing database operations asynchronously to avoid blocking the main thread.
 
 

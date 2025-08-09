@@ -1,4 +1,16 @@
-->MVVM (Model-View-ViewModel) 
+
+->MVVM  vs MVI
+| Feature               | MVVM                                              | MVI                                                  |
+| --------------------- | ------------------------------------------------- | ---------------------------------------------------- |
+| State Management      | State is often mutable and managed via ViewModel. | State is immutable and managed with reducers.        |
+| Data Flow             | Bidirectional (View observes ViewModel).          | Unidirectional (View sends Intents, receives State). |
+| Complex UI States     | Less structured, can become complex to manage.    | Handles complex states with predictable transitions. |
+| Boilerplate Code      | Less boilerplate, easier to set up.               | More boilerplate due to explicit state handling.     |
+| Testability           | Good testability (but less structured).           | Excellent testability due to pure state reducers.    |
+| Ease of Use           | Easier to implement and learn.                    | Requires a deeper understanding of state-driven UI.  |
+
+
+->MVVM (Model-View-ViewModel)
 --MVVM, which stands for Model-View-ViewModel, is a design pattern that helps in separating the development of the 
   user interface from the business logic 
 --This separation enhances the testability and maintainability of the code.

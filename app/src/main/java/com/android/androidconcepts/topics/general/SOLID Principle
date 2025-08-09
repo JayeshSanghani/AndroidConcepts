@@ -51,9 +51,7 @@ Bad example:
 	}
 
 	Here Employee class is managing more than one responsibility.
-
 	1 Employee info, 2 Ctc Info, 3 Address info.
-
 	So updating any of this will take more time as well as in more places, We need to maintain the code, and if we want to reuse one of the subparts so it is not reusable.
 
 Good example:
@@ -121,55 +119,69 @@ Good example:
 This principle states that “Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification”
 
 Bad example:
-	class MathematicalOperation {
+    class PaymentProcessor {
+        fun processPayment(type: String, amount: Double) {
+            when (type.lowercase()) {
+                "cash" -> println("Paid $$amount using Cash")
+                "card" -> println("Paid $$amount using Credit Card")
+                "paypal" -> println("Paid $$amount using PayPal")
+                else -> println("Unsupported payment method: $type")
+            }
+        }
+    }
+    ---Usage---
+	fun main() {
+        val processor = PaymentProcessor()
 
-	    fun doCalculation(operationName: String, firstNumber: Int, secondNumber: Int): Int {
-	        return when (operationName) {
-	            "Addition" -> {
-	                //do addition operation here
-	                firstNumber + secondNumber
-	            }
-	            "Subtraction" -> {
-	                // do subtraction operation
-	                firstNumber - secondNumber
-	            }
-	            else -> {
-	                throw OperationNotSupportedException()
-	            }
-	        }
-	    }
-
-	}
-
-	In the above example, We have a method that takes operation names and does the operation if we want to increase the operations so in that case, We need to touch the code of the above class and need to modify the doCalculation() method. Hence we are violating the Open close Principle.
+        processor.processPayment("cash", 100.0)
+        processor.processPayment("card", 250.0)
+        processor.processPayment("paypal", 500.0)
+    }
 
 Good example:
-	abstract class MathematicalOperation {
-	    abstract fun doCalculation(firstNumber: Int, secondNumber: Int): Int
-	}
+    1. Define a Common Interface (Abstraction)
+    interface PaymentMethod {
+        fun pay(amount: Double)
+    }
 
-	class Addition : MathematicalOperation() {
-	    
-	    override fun doCalculation(firstNumber: Int, secondNumber: Int): Int {
-	        return firstNumber + secondNumber
-	    }
-	}
+    2. Implement Different Payment Types (Extension)
+    class CashPayment : PaymentMethod {
+        override fun pay(amount: Double) {
+            println("Paid $$amount using Cash")
+        }
+    }
 
-	class Subtraction : MathematicalOperation() {
+    class CreditCardPayment : PaymentMethod {
+        override fun pay(amount: Double) {
+            println("Paid $$amount using Credit Card")
+        }
+    }
 
-	    override fun doCalculation(firstNumber: Int, secondNumber: Int): Int {
-	        return firstNumber - secondNumber
-	    }
-	}
+    class PayPalPayment : PaymentMethod {
+        override fun pay(amount: Double) {
+            println("Paid $$amount using PayPal")
+        }
+    }
 
-	class Multiplication : MathematicalOperation() {
+    3. POS Payment Processor (Closed for Modification)
+    class PaymentProcessor {
+        fun processPayment(paymentMethod: PaymentMethod, amount: Double) {
+            paymentMethod.pay(amount)
+        }
+    }
 
-	    override fun doCalculation(firstNumber: Int, secondNumber: Int): Int {
-	        return firstNumber * secondNumber
-	    }
-	}
+    ---Usage---
+    fun main() {
+        val pos = PaymentProcessor()
 
-	Here in the above example, we are having an abstract class which is having the abstract method and all the subclasses are implementing its functionality according to the type of classes, So in the future, any new class will introduce so we need not modify existing code rather we can just define 1 class and its functionality and we are done.
+        val cash = CashPayment()
+        val card = CreditCardPayment()
+        val paypal = PayPalPayment()
+
+        pos.processPayment(cash, 100.0)
+        pos.processPayment(card, 250.0)
+        pos.processPayment(paypal, 500.0)
+    }
 
 
 ==> Liskov Substitution Principle (LSP)
@@ -179,89 +191,188 @@ Parent classes should be easily substituted with their child classes without cha
 This becomes important when we use inheritance, We always need to check if the child class is a proper subset of a parent class then only we should use inheritance otherwise we are breaking LSP.
 
 Bad Example:
-	open class Bird {
-	    fun fly() {}
-	}
-	class Parrot : Bird()
-	class Hen : Bird()
+    Let’s say someone decides to throw an exception for discounts in a subclass that should follow the base class’s rules.
+    class NoDiscountProduct(name: String, price: Double) : Product(name, price) {
+        override fun getFinalPrice(): Double {
+            throw UnsupportedOperationException("Discount not supported")
+        }
+    }
+    Now
+    val product: Product = NoDiscountProduct("Membership", 200.0)
+    println(product.getFinalPrice()) // 💥 CRASHES!
 
-	Here in the above example, we have bird class and we have Parrot and Hen subclasses
-	Bird class has the fly method but the Hen can not fly so it violates the principle
+    That violates LSP — because NoDiscountProduct can’t be safely substituted for Product.
 
-Good example:
-	open class Bird {
-	}
+Good Example:
+    1. Base Class
+    open class Product(val name: String, val price: Double) {
+        open fun getFinalPrice(): Double = price
+    }
 
-	open class FlyingBirds : Bird() {
-    fun fly() {}
-	}
+    2. Subclass: Discountable Product
+    class DiscountedProduct(name: String, price: Double, val discountPercent: Double)
+        : Product(name, price) {
 
-	class Parrot : FlyingBirds()
-	class Hen : Bird()
-	Here we have introduced one more class which has a fly method that is applicable only to the type of bird that can fly
+        override fun getFinalPrice(): Double {
+            return price - (price * discountPercent / 100)
+        }
+    }
+
+    3. Subclass: Fixed Price Product (no discount)
+    class FixedPriceProduct(name: String, price: Double) : Product(name, price)
+
+    4. You Can Substitute Any Product Type
+    fun printReceipt(products: List<Product>) {
+        for (product in products) {
+            println("${product.name}: $${product.getFinalPrice()}")
+        }
+    }
+
+    ---Usage---
+    fun main() {
+        val items = listOf(
+            DiscountedProduct("T-Shirt", 50.0, 10.0),
+            FixedPriceProduct("Gift Card", 100.0),
+            DiscountedProduct("Shoes", 120.0, 20.0)
+        )
+
+        printReceipt(items)
+    }
 
 
 ==> Interface Segregation Principle (ISP)
 It states that “do not force any client to implement an interface which is irrelevant to them“. 
 
 Bad Example:
-	interface Listener{
-	    fun longClickListener()
-	    fun onClickListener()
-	    fun sendDataToOtherPage()
-	    fun showToast()
-	    fun clearInput()
-	}
-	Here in the above example, we have only 1 interface and many methods which some classes will not need so we are making a bulky interface that is of not much use for many classes
+    interface POSDevice {
+        fun printReceipt(data: String)
+        fun scanBarcode(): String
+        fun processCard(amount: Double)
+    }
+    Now imagine you create a BarcodeScanner class:
+    class BarcodeScanner : POSDevice {
+        override fun printReceipt(data: String) {
+            throw UnsupportedOperationException("Not supported")
+        }
+
+        override fun scanBarcode(): String {
+            return "123456789"
+        }
+
+        override fun processCard(amount: Double) {
+            throw UnsupportedOperationException("Not supported")
+        }
+    }
+    😬 Ugh! This class is forced to implement methods it doesn’t use. That’s a direct violation of ISP.
 
 Good example:
-	interface ClickListener{
-	    fun longClickListener()
-	    fun onClickListener()
-	}
+    1. Break interfaces into smaller, specific ones
+    interface ReceiptPrinter {
+        fun printReceipt(data: String)
+    }
 
-	interface DataDownloaded{
-	    fun showResult()
-	    fun showToast()
-	}
-	Here we have 2 interfaces at the time of listeners we can use the click listener interface and on data loaded we can use another interface which are having fewer and more relevant methods
+    interface BarcodeScanner {
+        fun scanBarcode(): String
+    }
+
+    interface CardReader {
+        fun processCard(amount: Double)
+    }
+
+    2. Implement only what each device needs
+    class ThermalPrinter : ReceiptPrinter {
+        override fun printReceipt(data: String) {
+            println("Printing receipt: $data")
+        }
+    }
+
+    class USBBarcodeScanner : BarcodeScanner {
+        override fun scanBarcode(): String {
+            return "123456789"
+        }
+    }
+
+    class NFCReader : CardReader {
+        override fun processCard(amount: Double) {
+            println("Processing card payment of $$amount")
+        }
+    }
+
+    ---Usage---
+    fun processPOS(printer: ReceiptPrinter?, scanner: BarcodeScanner?, cardReader: CardReader?) {
+        scanner?.scanBarcode()?.let { println("Scanned product: $it") }
+        cardReader?.processCard(99.99)
+        printer?.printReceipt("Total: $99.99")
+    }
+
+    fun main() {
+        val printer = ThermalPrinter()
+        val scanner = USBBarcodeScanner()
+        val reader = NFCReader()
+
+        processPOS(printer, scanner, reader)
+    }
 
 
 ==> Dependency Inversion Principle (DIP)
 This principle states that high-level modules should not depend on low-level modules. Both should depend on abstractions and Abstractions should not depend upon details. Details should depend upon abstractions.
 
 Bad Example:
-	class MySQLDatabase {
-	    fun connect() {
-	        println("Connecting to MySQL")
-	    }
-	}
+    class PaymentProcessor {
+        fun process(amount: Double) {
+            val cardPayment = CardPayment()
+            cardPayment.pay(amount)
+        }
+    }
 
-	class UserRepository {
-	    private val database = MySQLDatabase()
-
-	    fun fetchUser() {
-	        database.connect()
-	        println("Fetching user")
-	    }
-	}
-	UserRepository depends directly on the MySQLDatabase implementation.
+    class CardPayment {
+        fun pay(amount: Double) {
+            println("Paid $$amount using Card")
+        }
+    }
+    😬 Problems:
+    PaymentProcessor (high-level) directly depends on CardPayment (low-level).
+    Can't switch to PayPalPayment or CashPayment without modifying PaymentProcessor.
+    Hard to test or extend.
 
 Good example:
-	interface Database {
-	    fun connect()
-	}
+     1. Create an abstraction
+    interface PaymentMethod {
+        fun pay(amount: Double)
+    }
 
-	class MySQLDatabase : Database {
-	    override fun connect() {
-	        println("Connecting to MySQL")
-	    }
-	}
+    2. Implement low-level classes
+    class CardPayment : PaymentMethod {
+        override fun pay(amount: Double) {
+            println("Paid $$amount using Card")
+        }
+    }
 
-	class UserRepository(private val database: Database) {
-	    fun fetchUser() {
-	        database.connect()
-	        println("Fetching user")
-	    }
-	}
-	The UserRepository depends on an abstraction (Database), making it flexible to use any database implementation.
+    class PayPalPayment : PaymentMethod {
+        override fun pay(amount: Double) {
+            println("Paid $$amount using PayPal")
+        }
+    }
+
+    3. High-level class depends on abstraction
+    class PaymentProcessor(private val paymentMethod: PaymentMethod) {
+        fun process(amount: Double) {
+            paymentMethod.pay(amount)
+        }
+    }
+
+    ---Usage---
+    fun main() {
+        val cardPayment = CardPayment()
+        val payPalPayment = PayPalPayment()
+
+        val cardProcessor = PaymentProcessor(cardPayment)
+        val paypalProcessor = PaymentProcessor(payPalPayment)
+
+        cardProcessor.process(100.0)
+        paypalProcessor.process(200.0)
+    }
+    ✅ Why This Follows DIP
+    PaymentProcessor doesn’t care how the payment is done — it relies on the PaymentMethod interface.
+    Low-level modules (CardPayment, PayPalPayment) can be changed without touching PaymentProcessor.
+    You can easily add test stubs or mocks for unit testing.
