@@ -1,6 +1,6 @@
 -->	Suspended function
 	Suspended functions are commonly used with coroutines to perform asynchronous operations such as network request
-	or db queries in more redabale maanner.
+	or db queries in more readable manner.
 	Example:
 	suspend fun fetchDataFromApi(): String {
 		delay(1000) // Simulating network delay
@@ -14,37 +14,28 @@
 		}
 	}
 	Usage in Android:
-
-	Performing database operations asynchronously to avoid blocking the main thread.
+    Performing database operations asynchronously to avoid blocking the main thread.
 
 
 -->	Inline function
 	Once a functions is declared inline the compiler copies the piece of code virtually at the calling place at runtime.
 	This can improve performance by reducing the overhead of function calls.
 	Example:
-	inline fun measureExecutionTime(block: () -> Unit) {
-		val startTime = System.currentTimeMillis()
-		block()
-		val endTime = System.currentTimeMillis()
-		println("Execution time: ${endTime - startTime} ms")
-	}
+	inline fun operate(x: Int, y: Int, operation: (Int, Int) -> Int): Int {
+        return operation(x, y)
+    }
 
-	fun main() {
-		measureExecutionTime {
-			Thread.sleep(500) // Simulating some task
-		}
-	}
-	Usage in Android:
-	Logging execution times.
-	Efficiently handling lambdas in performance-critical parts.
+    fun main() {
+        val sum = operate(5, 3) { a, b -> a + b }
+        println(sum)
+    }
 
-
--->	Lamda function
+-->	Lambda function
 	Lambda functions are anonymous functions that can be passed as arguments to other functions or returned as values.
 	They are often used to simplify code and make it more concise.
 	You can pass function types into another functions.
 	you can return function types from another functions.
-	Retuens the value of last expression.
+	Returns the value of last expression.
 	Example:
 	fun operate(x: Int, y: Int, operation: (Int, Int) -> Int): Int {
 		return operation(x, y)
@@ -52,9 +43,7 @@
 
 	fun main() {
 		val sum = operate(5, 3, { a, b -> a + b }) // Lambda for addition
-		val product = operate(5, 3, { a, b -> a * b }) // Lambda for multiplication
-		println("Sum: $sum")
-		println("Product: $product")
+		println(sum)
 	}
 
 
@@ -63,38 +52,25 @@
 	They are a powerful tool for abstraction and code reuse.
 	We can define higher order functions using lambda expression and anonymous function.
 	Example:
-	fun executeIfNetworkAvailable(isNetworkAvailable: Boolean, action: () -> Unit) {
-		if (isNetworkAvailable) {
-			action()
-		} else {
-			println("No network available")
-		}
-	}
-	fun main() {
-		executeIfNetworkAvailable(true) {
-			println("Fetching data...")
-		}
-	}
-	Usage in Android:
-	Performing actions based on conditions, such as network availability.
-	Writing reusable logic for callbacks.
+	fun operate(a: Int, b: Int, operation: (Int, Int) -> Int): Int {
+        return operation(a, b)
+    }
 
+    fun main() {
+        val result = operate(10, 5) { a, b -> a + b }
+        println(result)
+    }
 
 -->	Extension function
 	An extension function allows you to add functionality to existing classes without modifying their code.
 	Example:
-	fun TextView.setCustomTextStyle(text: String, size: Float) {
-		this.text = text
-		this.textSize = size
-		this.setTextColor(Color.RED)
+	fun String.addGreetings(): String {
+		return "Dear $this"
 	}
 	fun main() {
-		val textView = TextView(context)
-		textView.setCustomTextStyle("Hello Kotlin", 18f)
+		val name = "Jayesh"
+		println(name.addGreetings())
 	}
-	Usage in Android:
-	Simplifying repetitive operations on views (e.g., setting styles, text, etc.).
-	Enhancing readability and maintainability.
 
 -->	Inline, Cross inline and No inline function
 	In Kotlin, inline, crossinline, and noinline are modifiers used with higher-order functions (functions that take functions
@@ -161,27 +137,43 @@
 	}
 
 
--->	takeIf
+-->	takeIf(Extension function)
 	The takeIf function returns the object if the given predicate evaluates to true. If the predicate is false, it returns null.
-	Syntax:
-	fun <T> T.takeIf(predicate: (T) -> Boolean): T?
-	Example:
-	val userName = "JohnDoe"
 
-	val validUserName = userName.takeIf { it.length > 5 }
-	validUserName?.let {
-		println("Username is valid: $it")
-	} ?: println("Invalid username")
+	val name: String? = "Kotlin"
+    val uCase = name?.takeIf { it.isNotEmpty() }?.uppercase()
+    println(uCase)
 
-
--->	takeUnless
+-->	takeUnless(Extension function)
 	The takeUnless function is the inverse of takeIf. It returns the object if the predicate evaluates to false.
 	If the predicate is true, it returns null.
-	Syntax:
-	fun <T> T.takeUnless(predicate: (T) -> Boolean): T?
-	Example:
-	val networkErrorCode = 404
-	val isErrorCritical = networkErrorCode.takeUnless { it == 404 }
-	isErrorCritical?.let {
-		println("Critical error code: $it")
-	} ?: println("Not a critical error")
+
+	val name: String? = "Kotlin"
+    val lCase = name?.takeUnless { it.isEmpty() }?.lowercase()
+    println(lCase)
+
+-->	safe call operator(?.)
+    If object null then expression returns null instead of throwing null pointer exception.
+    Example:
+    val name: String? = null
+    println(name?.length) //OP:null
+
+-->	elvis operator(?:)
+    Providing default value when expression on the left is null.
+    Example:
+    val name: String? = null
+    val result = name ?: "Unknown"
+    println(result) //OP:Unknown
+
+-->	safe cast operator(as?)
+    Casting an object to specific type. If cast is not possible it returns null instead of cast exception.
+    Example:
+    val data: Any = "Hello"
+    val str: String? = data as? String
+    println(str) //OP:Hello
+
+-->	assertion operator(!!)
+    If variable is null it will throw null pointer exception.
+    Example:
+    val name: String? = null
+    val len = name!!.length  //OP: NPE

@@ -1,7 +1,7 @@
 
 -> Launch mode
 	-Launch mode defines how an activity should behave in the task stack.
-	-Launch mode is specified using than android launch mode into menifest file.
+	-Launch mode is specified using the android:launchMode attribute in the AndroidManifest.xml file.
 
 	1) Standard (Default)
 	2) Single Top
@@ -10,17 +10,19 @@
 	5) SingleInstancePerTask
 
 1) Standard (Default)
-	-This is the default launch mode of activity. If you don’t set any launch mode to your activity, it will use the standard mode by default. It creates a new instance of activity every time even if activity instance is already present.
+	-This is the default launch mode of activity. If you don’t set any launch mode to your activity, it will use the standard mode by default.
+	It creates a new instance of activity every time even if activity instance is already present.
 
 	-Suppose we have A, B, C, and D activities and your activity B has standard launch mode. Now again launching activity B
 	State of Activity Stack before launch B
-	A →B→ C→D
+	A → B → C → D
 	State of Activity Stack after launch B
-	A → B → C→D→ B
+	A → B → C → D → B
 	We can see that new instance of B is created again.
 
 2) Single Top
-	If an instance of activity already exists at the top of the current task, a new instance will not be created and the Android system will route the intent information through onNewIntent().
+	If an instance of activity already exists at the top of the current task, a new instance will not be created and the
+	Android system will route the intent information through onNewIntent().
 	If an instance is not present on top of the task then a new instance will be created.
 
 	-Suppose we have A, B, C, and D activities. A →B →C →D
@@ -32,7 +34,8 @@
 	then we if again launch C activity then in this case new instance will not be created. Instead, we will receive the callback on onNewIntent() method.
 
 3) Single Task
-	-In this launch mode, if the activity doesn't exist in the task, a new instance is created otherwise onNewIntent() is called. Additionally, activities above it get destroyed. 
+	-In this launch mode, if the activity doesn't exist in the task, a new instance is created otherwise onNewIntent() is called.
+	Additionally, activities above it get destroyed.
 	-The task with activities: A -> B -> C -> D
 	Start activity E with launch mode single task: A -> B -> C -> D -> E
 	Start activity B with launch mode single task: A -> B
@@ -41,7 +44,8 @@
 
 
 4) Single Instance
-	-This mode is similar to singleTask mode, but the major difference is that the activity is launched in a new task and this task cannot have any other activities.
+	-This mode is similar to singleTask mode, but the major difference is that the activity is launched in a new task and
+	this task cannot have any other activities.
 	--The task with activities: A -> B -> C -> D
 	Launch E with launch mode single instance:
 	Task-1: A -> B -> C -> D
@@ -61,3 +65,9 @@ singleInstance	No				Yes				Separate task, no other activities in the same task.
 singleInstance  No				Yes				Acts like singleInstance, but other activities can share the task.
 PerTask	
 
+Mode	                Instance Created    Example Stack                       Typical Use Case
+standard	            Every time          A → B → B	                        Normal navigation
+singleTop	            If not on top       A → B (reuse if on top)	            Notification click, chat window
+singleTask	            One per task	    A → B → C → D → Launch B → A → B	Home or dashboard
+singleInstance	        Only one globally	Task1: A→B→C, Task2: E	            Player, lock screen
+singleInstancePerTask	One per task	    Task1: A→E, Task2: X→E              Document viewer, multi-window apps

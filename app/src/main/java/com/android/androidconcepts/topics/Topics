@@ -1,3 +1,55 @@
+Mphasis :
+Testcases related -Mock, Mockito Spy
+Log analysis
+Way of Issue fixing
+Roles & responsibility - individual responsibility
+
+=============================================================================================
+Accenture 1st round
+Difference between stack and linked list
+Layer of clean architecture
+Flow
+Coroutine
+Compose state management
+Thread vs coroutine if 10000 record get using it both then why we use co routine
+
+
+Accenture 2nd round
+Mvvm why repository define
+Coroutine in detail - which dispatcher used for heavy calculations
+State in Jetpack compose
+Composition and recomposition
+How to manage item position in Jetpack compose
+How to make custom components in Jetpack compose give example
+Android life cycle
+Declarative vs. Imperative
+
+=============================================================================================
+Wall Mart
+Deep link static and dynamic
+Room dB insert update delete
+How to retain data in mvvm
+Scheled class
+How to use final data
+Open keyword
+Intent in depth
+How to get data from final string
+
+=============================================================================================
+Nisum Hyderabad
+
+Have you faced challance and how to overcome
+Flow
+Navigation
+Extention and suspended func
+
+=============================================================================================
+
+
+=============================================================================================
+
+
+=============================================================================================
 Jetpack Compose Interview Questions:
 -> LaunchedEffect
 -> State hosting
@@ -142,6 +194,10 @@ Android Developer	        Samartha Solutions	                Ahmedabad	5	       
 Android Developer	        Dubond Infotech Services LLP	    Ahmedabad	41	        09/06/2016	22/11/2019
 Senior Software Engineer	Pay Ok Fintech Ecosystem Pvt Ltd	Ahmedabad	22	        25/11/2019	07/09/2021
 Senior Android Developer	Omni ISM	                        Ahmedabad	27	        09/09/2021	31/12/2023
+
+Master of Computer Application | Sunshine Group of Institutions | Apr 2011 - Jun 2013 (7.87 CGPA)
+PGDCA | Shree H.N.Shukla group of Colleges | Apr 2009 - Jun 2010 (58.83%)
+Bachelor of Commerce | P D Malaviya College of Commerce | 2006 - Mar 2009 (63.14%)
 
 --------------------------------------------------------------------------------------
  I request a relocation to another project within the company. As you are aware, my last working day is October 30, 2024

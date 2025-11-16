@@ -11,7 +11,7 @@
 
 
 ->MVVM (Model-View-ViewModel)
---MVVM, which stands for Model-View-ViewModel, is a design pattern that helps in separating the development of the 
+--MVVM, which stands for Model-View-ViewModel, is a architectural design pattern that helps in separating the development of the
   user interface from the business logic 
 --This separation enhances the testability and maintainability of the code.
 
@@ -35,31 +35,6 @@ It separates the into three main components:
 	I’ve used LiveData and Kotlin Coroutines within ViewModels to manage asynchronous data loading and ensure 
 	the UI remains responsive.
 	It's the 'why' – the logic behind the presentation.
-
--->MVVM Without Clean Architecture
-The components are structured as follows:
-	______________________________________________
-	UI: The user interface (Views) directly interacts with the ViewModel.
-	______________________________________________
-	Presenter/ViewModel (Business Logic): Contains all business logic and 
-	directly accesses the Repository.
-	______________________________________________
-	Repository: Acts as an abstraction for data sources and manages data operations.
-	DataSource: The actual source of data (e.g., local database, remote API).
-	______________________________________________
-	
-	Example:
-	______________________________________________
-	UI- LoginActivity or LoginFragment
-	____________________________________________
-	Presenter/ViewModel (Business Logic)- LoginViewModel
-	______________________________________________
-	Repository
-	- LoginRepository
-	DataSource
-	- RemoteLoginDataSource (API calls)
-	- LocalLoginDataSource (Database or SharedPreferences)
-	______________________________________________
 
 
 -->MVVM With Clean Architecture
@@ -103,196 +78,41 @@ The components are divided into layers for better separation of concerns:
 	______________________________________________
 
 -->Advantages of MVVM [DTSRS]
-Data Binding: Simplifies UI updates by observing changes in the ViewModel.
-Testability: ViewModel is easy to test as it has no dependency on Android framework classes.
-Separation of Concerns: Clearly separates UI logic from business logic.
-Reusability: ViewModel logic can be reused across multiple Views.
-Scalability: Easy to scale applications due to modularity.
-Lifecycle Awareness: In Android, the ViewModel is lifecycle-aware, reducing memory leaks and ensuring efficient 
-handling of UI-related data.
+    Data Binding: Simplifies UI updates by observing changes in the ViewModel.
+    Testability: ViewModel is easy to test as it has no dependency on Android framework classes.
+    Separation of Concerns: Clearly separates UI logic from business logic.
+    Reusability: ViewModel logic can be reused across multiple Views.
+    Scalability: Easy to scale applications due to modularity.
+    Lifecycle Awareness: In Android, the ViewModel is lifecycle-aware, reducing memory leaks and ensuring efficient
+    handling of UI-related data.
 
 ->When to Use MVVM:
-When managing complex UIs with a lot of user interactions, dynamic data, and configuration changes.
-When data persistence across configuration changes is important.
-When building scalable, testable, and maintainable applications, where you need clean separations of
-UI and data-handling logic.
-
-
-->Key Concepts in Android MVVM:
-1)Data Binding: Android’s Data Binding Library can be used to bind the ViewModel data directly to UI components in XML.
-This reduces the amount of boilerplate code for updating the UI when the data changes.
-2)LiveData: LiveData is a lifecycle-aware observable data holder used in the ViewModel. It allows the View to observe
-changes in the data and update the UI automatically when the data is updated.
-3)Repository Pattern: Often, the Model layer uses a Repository to abstract data access. A repository handles fetching
-data from multiple sources like a remote API or a local database.
-
+    When managing complex UIs with a lot of user interactions, dynamic data, and configuration changes.
+    When data persistence across configuration changes is important.
+    When building scalable, testable, and maintainable applications, where you need clean separations of
+    UI and data-handling logic.
 
 ->How MVVM Works
-1)ViewModel Fetches Data: The ViewModel interacts with the Repository (part of the Model) to fetch data.
-2)LiveData Updates View: The ViewModel exposes data as LiveData, which the View observes. When data changes, the UI updates automatically.
-3)User Interaction: User actions are passed from the View to the ViewModel, which handles the logic.
+    1)ViewModel Fetches Data: The ViewModel interacts with the Repository (part of the Model) to fetch data.
+    2)LiveData Updates View: The ViewModel exposes data as LiveData, which the View observes. When data changes, the UI updates automatically.
+    3)User Interaction: User actions are passed from the View to the ViewModel, which handles the logic.
 
 ->Disadvantages of MVVM
-Steeper Learning Curve: For developers new to architectural patterns.
-Boilerplate Code: Can result in additional code for simple applications.
+    Steeper Learning Curve: For developers new to architectural patterns.
+    Boilerplate Code: Can result in additional code for simple applications.
 
 
 1)Presentation Layer
-Purpose:
-	Contains UI logic (Activity/Fragment) and observes changes from ViewModel.
-Classes:
- 	->XML Layout (activity_login.xml)
-		The XML layout uses two-way data binding (@={}) to directly bind the EditText values to the ViewModel and triggers the login logic on button click.
-	<layout xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:app="http://schemas.android.com/apk/res-auto"
-	    xmlns:tools="http://schemas.android.com/tools">
-		
-	    <data>
-	        <variable
-	            name="viewModel"
-	            type="com.example.app.LoginViewModel" />
-	    </data>
-
-	    <LinearLayout
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:orientation="vertical"
-	        android:padding="16dp">
-
-	        <EditText
-	            android:id="@+id/editTextUsername"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:hint="Username"
-	            android:text="@={viewModel.username}" />
-
-	        <EditText
-	            android:id="@+id/editTextPassword"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:hint="Password"
-	            android:inputType="textPassword"
-	            android:text="@={viewModel.password}" />
-
-	        <Button
-	            android:id="@+id/buttonLogin"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:text="Login"
-	            android:onClick="@{() -> viewModel.login()}" />
-
-	        <ProgressBar
-	            android:id="@+id/progressBar"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:visibility="@{viewModel.isLoading ? View.VISIBLE : View.GONE}" />
-	    </LinearLayout>
-	</layout>
-	
-	->LoginActivity (or LoginFragment):
-		Using Data Binding, the XML layout binds directly to the LoginViewModel. This removes the need to manually find views or set up listeners in the Activity.
-	class LoginActivity : AppCompatActivity() {
-	    private lateinit var binding: ActivityLoginBinding
-	    private val viewModel: LoginViewModel by viewModels {
-	        LoginViewModelFactory(LoginUseCase(LoginRepository()))
-	    }
-
-	    override fun onCreate(savedInstanceState: Bundle?) {
-	        super.onCreate(savedInstanceState)
-	        binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-
-	        // Bind ViewModel to the layout
-	        binding.viewModel = viewModel
-	        binding.lifecycleOwner = this
-
-	        // Observe login result
-	        viewModel.loginResult.observe(this) { result ->
-	            if (result.isSuccessful) {
-	                Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
-	                // Navigate to the next screen
-	            } else {
-	                Toast.makeText(this, "Login Failed: ${result.errorMessage}", Toast.LENGTH_SHORT).show()
-	            }
-	        }
-	    }
-	}
-
-	->LoginViewModel:
-		The ViewModel exposes observable fields (e.g., MutableLiveData) for the UI to bind directly to.
-	class LoginViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
-	    private val _loginResult = MutableLiveData<LoginResult>()
-	    val loginResult: LiveData<LoginResult> = _loginResult
-
-	    fun login(username: String, password: String) {
-	        viewModelScope.launch {
-	            val result = loginUseCase.execute(username, password)
-	            _loginResult.value = result
-	        }
-	    }
-	}
-
+    Purpose:
+        Contains UI logic (Activity/Fragment) and observes changes from ViewModel.
 2)Domain Layer
-Purpose:
-	Contains business logic and use cases.
-	Decoupled from the data source.
-Classes:
-	->LoginUseCase:
-		Executes the login operation by calling the LoginRepository.
-		class LoginUseCase(private val loginRepository: LoginRepository) {
-		    suspend fun execute(username: String, password: String): LoginResult {
-		        return loginRepository.login(username, password)
-		    }
-		}
-
-	->LoginResult:
-		Represents the outcome of the login operation..
-
-	data class LoginResult(val isSuccessful: Boolean, val errorMessage: String? = null)
-
+    Purpose:
+        Contains business logic and use cases.
+        Decoupled from the data source.
 3)Data Layer
-Purpose:
-	Manages data sources (local or remote) and handles fetching/saving data.
-Classes:
-	->LoginRepository:
-		Acts as the entry point to data operations.
-		Fetches data from remote (e.g., server via API) or local (e.g., Room).
-		class LoginRepository {
-		    private val remoteDataSource = RemoteDataSource()
-		    private val localDataSource = LocalDataSource()
+    Purpose:
+        Manages data sources (local or remote) and handles fetching/saving data.
 
-		    suspend fun login(username: String, password: String): LoginResult {
-		        // Example logic: Try remote login, fall back to local cache
-		        val remoteResult = remoteDataSource.login(username, password)
-		        return if (remoteResult.isSuccessful) {
-		            localDataSource.saveUserData(username, password) // Cache data locally
-		            remoteResult
-		        } else {
-		            remoteResult
-		        }
-		    }
-		}
-
-
-	->RemoteDataSource:
-		Handles API requests (e.g., Retrofit).
-		class RemoteDataSource {
-		    suspend fun login(username: String, password: String): LoginResult {
-		        // Simulate API call
-		        return if (username == "test" && password == "password") {
-		            LoginResult(true)
-		        } else {
-		            LoginResult(false, "Invalid credentials")
-		        }
-		    }
-		}
-
-	->LocalDataSource:
-		Handles local database operations (e.g., Room).
-		class LocalDataSource {
-		    fun saveUserData(username: String, password: String) {
-		        // Save to Room or SharedPreferences
-		    }
-		}
 
 
 ->How Data Flows in the Architecture
@@ -308,4 +128,40 @@ Classes:
 		The LoginResult flows back to the ViewModel, which updates the LiveData. 
 		The Activity observes this and updates the UI.
 
+
+
+->Key Concepts in Android MVVM:
+    1)Data Binding: Android’s Data Binding Library can be used to bind the ViewModel data directly to UI components in XML.
+    This reduces the amount of boilerplate code for updating the UI when the data changes.
+    2)LiveData: LiveData is a lifecycle-aware observable data holder used in the ViewModel. It allows the View to observe
+    changes in the data and update the UI automatically when the data is updated.
+    3)Repository Pattern: Often, the Model layer uses a Repository to abstract data access. A repository handles fetching
+    data from multiple sources like a remote API or a local database.
+
+
+
+-->MVVM Without Clean Architecture
+The components are structured as follows:
+	______________________________________________
+	UI: The user interface (Views) directly interacts with the ViewModel.
+	______________________________________________
+	Presenter/ViewModel (Business Logic): Contains all business logic and
+	directly accesses the Repository.
+	______________________________________________
+	Repository: Acts as an abstraction for data sources and manages data operations.
+	DataSource: The actual source of data (e.g., local database, remote API).
+	______________________________________________
+
+	Example:
+	______________________________________________
+	UI- LoginActivity or LoginFragment
+	____________________________________________
+	Presenter/ViewModel (Business Logic)- LoginViewModel
+	______________________________________________
+	Repository
+	- LoginRepository
+	DataSource
+	- RemoteLoginDataSource (API calls)
+	- LocalLoginDataSource (Database or SharedPreferences)
+	______________________________________________
 

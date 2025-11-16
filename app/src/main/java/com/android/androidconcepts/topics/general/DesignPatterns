@@ -4,7 +4,7 @@ https://sourcemaking.com/design_patterns/behavioral_patterns
 
 -->Design Patterns
     -Design patterns usually deal with objects.
-    -A Design Pattern is a general, reusable solution to a commonly occurring problem within a given context.
+    -A Design Pattern is a general, reusable solution to a common software problem within a given context.
     -Design patterns are like "tools in a toolbox" for building better apps faster, with fewer mistakes.
 1.Creational patterns: How you create objects.
     Builder

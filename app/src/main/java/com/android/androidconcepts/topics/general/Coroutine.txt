@@ -1,6 +1,7 @@
 -> Coroutine
 Coroutine is concurrency design pattern that we can use on android to simplify the code that execute asynchronously.
 Coroutine helps to manage long running task that might otherwise block main thread and cause your app to become unresponsive.
+In Kotlin, a coroutine is basically a lightweight thread that can be suspended and resumed without blocking the main thread.
 ----------------------------------
 
 Benefits/ Features of Coroutines
@@ -11,7 +12,11 @@ Coroutines is our recommended solution for asynchronous programming on Android.
 4) Jetpack integration: Many Jetpack libraries include extensions that provide full coroutines support. Some libraries also provide their own coroutine scope that you can use for structured concurrency.
 
 ----------------------------------
--> Coroutine builers
+-> Coroutine builders
+    coroutine builders are functions that help you create and start coroutines.
+    They define how a coroutine should start, run, and return results.
+    Think of them like constructors for coroutines.
+
 1) launch
 2) async
 3) runBlocking
@@ -118,7 +123,9 @@ Coroutines is our recommended solution for asynchronous programming on Android.
 	}
 
 
--> Kotlin provides three dispatchers to specify where the coroutine should run.
+-> Kotlin provides 4 dispatchers to specify where the coroutine should run.
+    Dispatcher decides which thread (or thread pool) the coroutine will run on.
+    Think of it as the traffic controller for your coroutines.
 
 1) Dispatchers.Main
 2) Dispatchers.IO
@@ -167,7 +174,7 @@ Coroutines is our recommended solution for asynchronous programming on Android.
 	}
 
 ----------------------------------
--> Coroutine scopes
+-> Coroutine scopes: A CoroutineScope defines the lifecycle boundaries of a coroutine.
 1) Global Scope
 2) Lifecycle-Aware Scopes
 3) Viewmodel Scope
@@ -207,7 +214,8 @@ Coroutines is our recommended solution for asynchronous programming on Android.
 	}
 
 3) Viewmodel Scope
-	Description: Tied to the lifecycle of a ViewModel. This is good choice for coroutine that need to live as long as the data viewmodel manages.
+	Description: Tied to the lifecycle of a ViewModel.
+	This is good choice for coroutine that need to live as long as the data viewmodel manages.
 	Key Features:
 	Automatically cancels coroutines when the component is destroyed.
 	Use Case: Android development.
