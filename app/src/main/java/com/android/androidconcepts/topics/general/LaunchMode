@@ -54,8 +54,8 @@
 
 
 5) SingleInstancePerTask
-	-This mode is similar to singleInstance mode, but the only difference is that muliple instances of the activity can be created in different tasks.
-
+	-singleInstancePerTask launch mode ensures that only one instance of the activity exists in each task,
+	but the system is allowed to create multiple tasks. Each task will host exactly one instance of that activity as its root.
 
 Launch Mode		New Instance	Reuse Instance	Special Behavior
 standard		Always			No				Default mode, always creates a new instance.
