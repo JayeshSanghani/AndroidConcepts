@@ -6,21 +6,21 @@ https://sourcemaking.com/design_patterns/behavioral_patterns
     -Design patterns usually deal with objects.
     -A Design Pattern is a general, reusable solution to a common software problem within a given context.
     -Design patterns are like "tools in a toolbox" for building better apps faster, with fewer mistakes.
-1.Creational patterns: How you create objects.
-    Builder
-    Dependency Injection
+1.Creational patterns: How you create objects.(BDSF)
+    Builder - Dialog and base fragment
+    Dependency Injection - Hilt
     Singleton
     Factory
-2.Structural patterns: How you compose objects.
-    Adapter
-    Facade
-    Decorator
-    Composite
-3.Behavioral patterns: How you coordinate object interactions.
-    Command
-    Observer
-    Strategy
-    State
+2.Structural patterns: How you compose objects.(AFDC)
+    Adapter - List same kind of item view
+    Facade - Square’s Retrofit is an open-source
+    Decorator - SpannableString
+    Composite - compose objects into tree structures
+3.Behavioral patterns: How you coordinate object interactions.(COSS)
+    Command - Using OnClickListener to handle button clicks
+    Observer -
+    Strategy - Implementing a Layout strategy for data in a list/grid
+    State - Media Player state
 
 ------------------------------------------------------------------------------------------------------------------------
 1.Creational patterns: How you create objects.

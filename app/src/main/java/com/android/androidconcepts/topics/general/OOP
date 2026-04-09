@@ -1,0 +1,208 @@
+✍️ OOP Concepts
+    OOP refers to a type of computer programming in which programmers define not only data types but also the structure.
+
+    Use this if interviewer asks OOP:
+    OOP concepts like class, object, inheritance, encapsulation, polymorphism, and abstraction form the foundation of scalable software design.
+    In my experience, OOP concepts are applied through architectural patterns like Clean Architecture and MVVM.
+    Classes define structure,
+    objects represent runtime data,
+    inheritance helps reuse logic,
+    encapsulation ensures controlled data access,
+    polymorphism enables flexible behavior, and
+    abstraction hides implementation details.
+    Together, they help build maintainable, testable, and scalable applications.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+1) Class
+-Class is a reference data type that follows a strict hierarchical relationship of superclass and subclass, with the class called
+java.lang.Object as the root of class hierarchy.
+-Class contains data members and member functions.
+-Class also implements interfaces and extends abstract classes.
+
+🌍 Real-World Example
+    Bank Account Blueprint
+    Fields: accountNumber, balance
+    Functions: deposit(), withdraw()
+
+    data class BankAccount(
+        val accountNumber: String,
+        var balance: Double
+    ) {
+        fun deposit(amount: Double) {
+            balance += amount
+        }
+
+        fun withdraw(amount: Double) {
+            balance -= amount
+        }
+    }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+2) Object
+-Object are entities having properties and behaviors.
+-Object is an instance of class.
+
+🌍 Real-World Example
+    BankAcc class has attributes and balance so we can create object:
+    val account = BankAccount("12345", 2000.0)
+    account.deposit(500.0)
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+3) Inheritance
+-Deriving a new class from already existing class.
+🌍 Real-World Example
+-Types:
+    ------------------------------------------------------------------------------------------------------
+    Single: One child → one parent
+        SavingsAccount extends Account
+        open class Account(val accountNumber: String) {
+            fun deposit(amount: Double) {}
+        }
+        class SavingsAccount(accountNumber: String) : Account(accountNumber)
+
+    ------------------------------------------------------------------------------------------------------
+    Multilevel:Chain inheritance (A → B → C)
+        Account → SavingsAccount → PremiumSavingsAccount
+        open class Account(val accountNumber: String)
+        open class SavingsAccount(accountNumber: String) : Account(accountNumber)
+        class PremiumSavingsAccount(accountNumber: String) : SavingsAccount(accountNumber)
+
+    ------------------------------------------------------------------------------------------------------
+    Hierarchical: One parent → multiple children
+        Account → SavingsAccount, CurrentAccount, LoanAccount
+        open class Account(val accountNumber: String)
+
+        class SavingsAccount(accountNumber: String) : Account(accountNumber)
+        class CurrentAccount(accountNumber: String) : Account(accountNumber)
+        class LoanAccount(accountNumber: String) : Account(accountNumber)
+
+    ------------------------------------------------------------------------------------------------------
+    Multiple(via interfaces): One class → multiple parents (interfaces)
+        Account supports Interest + Loan features
+        interface Interest {
+            fun calculateInterest()
+        }
+
+        interface Loan {
+            fun applyLoan()
+        }
+
+        class SmartAccount : Interest, Loan {
+            override fun calculateInterest() {}
+            override fun applyLoan() {}
+        }
+
+    ------------------------------------------------------------------------------------------------------
+    Hybrid(combination of above): Combination of multiple + hierarchical
+        Account → SavingsAccount
+        SavingsAccount + Loan → SmartAccount
+        open class Account
+
+        open class SavingsAccount : Account()
+
+        interface Loan {
+            fun applyLoan()
+        }
+
+        class SmartAccount : SavingsAccount(), Loan {
+            override fun applyLoan() {}
+        }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+4) Encapsulation
+-Data encapsulation is process of packing/wrapping data members and member function in a single unit called class or object.
+-A Java class is the example of encapsulation.
+-JavaBean model is fully encapsulated class because all data members are private.
+
+🌍 Real-World Example
+    Bank Account
+        You cannot directly access balance
+        Only via deposit/withdraw
+
+   class BankAccount(private var balance: Double) {
+       fun deposit(amount: Double) {
+           balance += amount
+       }
+       fun getBalance(): Double {
+           return balance
+       }
+   }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+5) Polymorphism
+-Polymorphism is ability to have more than one forms.
+-Entity is single but behaving differently in different context.
+
+🌍 Real-World Example
+    Scan QR → UPI
+    Insert card → Card payment
+    Cash → Cash payment
+    interface PaymentMethod {
+        fun pay(amount: Double)
+    }
+
+    class UpiPayment : PaymentMethod {
+        override fun pay(amount: Double) {
+            println("UPI Payment")
+        }
+    }
+
+    class CardPayment : PaymentMethod {
+        override fun pay(amount: Double) {
+            println("Card Payment")
+        }
+    }
+
+    class CashPayment : PaymentMethod {
+        override fun pay(amount: Double) {
+            println("Cash Payment")
+        }
+    }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+6)Abstraction:
+-Abstraction is the process of just declaring the functionality not define in details.
+-Can be achieve by using the concept of abstract class.
+🌍 Real-World Example
+Abstract Class	BankAccount (defines that every account must be able to deposit and withdraw, but doesn't specify how yet).
+Abstract Method	calculateInterest() (every account has interest, but a "Savings Account" calculates it differently than a "Current Account").
+Concrete Class	SavingsAccount or CurrentAccount (where the "details" are finally defined).
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+📊 Method Overloading vs Method Overloading
+
+| Aspect                 | Method Overloading(Compile-time polymorphism)    | Method Overriding(Runtime polymorphism)                        |
+|------------------------|--------------------------------------------------|----------------------------------------------------------------|
+| Definition             | Defining multiple methods with the same name     | Defining a method in the derived class with the same name and  |
+                           but different parameters/return types              parameters as in the base class
+| Polymorphism Type      | Compile-time polymorphism                        | Runtime polymorphism                                           |
+| Inheritance            | Not required                                     | Required                                                       |
+| Parameters             | Must be different                                | Must be the same                                               |
+| Return Type            | Can be different                                 | Usually the same (or covariant)                                |
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+📊 Abstract Class vs Interface
+
+| Feature                   | Abstract Class                                              | Interface                                      |
+| --------------------------| ----------------------------------------------------------- | ---------------------------------------------- |
+| 1. Multiple Inheritance   | Does not support multiple inheritance                       | Supports multiple inheritance                  |
+| 2. Members & Constructors | Can contain data members and constructors                   | Does not contain constructors                  |
+| 3. Methods                | Can have abstract and non-abstract methods                  | Can have abstract, default, and static methods |
+| 4. Variables              | Can have final, non-final, static, and non-static variables | Only static and final variables                |
+| 5. Access Modifiers       | Can have private, protected, public, and default members    | Members are public by default                  |
+| 6. Example                | `abstract class Shape { abstract fun draw() }`              | `interface Shape { fun draw() }`               |
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------

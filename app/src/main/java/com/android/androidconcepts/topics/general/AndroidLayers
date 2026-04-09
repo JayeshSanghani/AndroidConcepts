@@ -129,7 +129,7 @@ System Apps: /packages/apps/
             ↓
     8 Alignment (zipalign)
             ↓
-    9Final APK Output
+    9 Final APK Output
 
 🧩 Step-by-Step Internal Explanation
 Step 1: Source Compilation

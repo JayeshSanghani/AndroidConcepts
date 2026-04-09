@@ -1,4 +1,4 @@
--> Coroutine
+    -> Coroutine
 Coroutine is concurrency design pattern that we can use on android to simplify the code that execute asynchronously.
 Coroutine helps to manage long running task that might otherwise block main thread and cause your app to become unresponsive.
 In Kotlin, a coroutine is basically a lightweight thread that can be suspended and resumed without blocking the main thread.
@@ -154,7 +154,7 @@ Coroutines is our recommended solution for asynchronous programming on Android.
 	}
 
 3) Dispatchers.Default
-	-Default  is optimized to perform cpu intensive work outside to the main thread.
+	-Default is optimized to perform cpu intensive work outside to the main thread.
 	-Executes coroutines on a shared pool of background threads.
 	Example:
 	launch(Dispatchers.Default) {
@@ -179,7 +179,7 @@ Coroutines is our recommended solution for asynchronous programming on Android.
 2) Lifecycle-Aware Scopes
 3) Viewmodel Scope
 4) Coroutine Scope
-5) Superwiser Scope 
+5) Superwiser Scope
 
 1) GlobalScope
 	Description: A global, application-wide scope for launching coroutines.

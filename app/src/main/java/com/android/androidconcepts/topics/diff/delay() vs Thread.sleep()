@@ -1,0 +1,10 @@
+-->delay() vs Thread.sleep()
+
+| Feature         | delay()                    | Thread.sleep()                 |
+| --------------- | -------------------------- | ------------------------------ |
+| Type            | Suspending function        | Blocking call                  |
+| Used in         | Coroutines                 | Normal threads                 |
+| Thread blocking | Does NOT block thread      | Blocks thread                  |
+| Performance     | Efficient (non-blocking)   | Inefficient (blocks resources) |
+| UI impact       | Safe (won’t freeze UI)     | Can freeze UI                  |
+| Import          | kotlinx.coroutines.delay   | java.lang.Thread.sleep         |

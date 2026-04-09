@@ -67,9 +67,14 @@
 	fun String.addGreetings(): String {
 		return "Dear $this"
 	}
+	fun String.capitalizeFirst(): String {
+        return this.replaceFirstChar { it.uppercase() }
+    }
 	fun main() {
 		val name = "Jayesh"
 		println(name.addGreetings())
+		val nameCap = "jayesh".capitalizeFirst()
+		println(nameCap)
 	}
 
 -->	Inline, Cross inline and No inline function

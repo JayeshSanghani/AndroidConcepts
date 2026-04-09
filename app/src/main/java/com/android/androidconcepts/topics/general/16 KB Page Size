@@ -1,0 +1,175 @@
+
+👉 What Is a Memory Page?
+    Memory is not managed byte-by-byte. Instead, it is divided into fixed-size blocks called pages.
+    A page is the smallest unit of memory that the OS manages.
+
+👉 What Is Page Size?
+    Page size = The size of each memory page.
+    Common page sizes:
+        4 KB (most common historically)
+        8 KB
+        16 KB
+        64 KB (in some architectures)
+        Traditionally, most systems (including Android devices) used 4 KB page size.
+        Now, newer systems are moving toward 16 KB page size.
+
+👉 What Is 16 KB Page Size?
+    A 16 KB page size means:
+        Each memory page = 16 Kilobytes
+        1 page = 16 × 1024 bytes = 16384 bytes
+    Instead of dividing memory into 4 KB chunks, the OS divides it into 16 KB chunks.
+
+👉 Why Does Page Size Matter?
+    Page size directly affects:
+    | Area              | Impact                     |
+    | ----------------- | -------------------------- |
+    | Memory allocation | How memory is reserved     |
+    | Performance       | TLB efficiency             |
+    | App compatibility | Native libraries alignment |
+    | APK behavior      | Binary loading             |
+    | System stability  | Memory fragmentation       |
+
+👉 Why Is Android Moving to 16 KB?
+    Google has been pushing 16 KB page size support for better performance in newer Android versions and ARM CPUs.
+    Modern ARM processors (like ARMv8/ARMv9) are optimized for larger page sizes.
+
+    Benefits include:
+    1. Better Performance
+        Fewer pages → fewer page table entries → fewer TLB misses.
+        (TLB = Translation Lookaside Buffer)
+    2. Better Memory Throughput
+        Large page size improves:
+            Sequential memory access
+            App startup speed
+            Native library loading
+    3. Optimized for Modern Hardware
+        Modern CPUs handle larger page sizes more efficiently.
+
+👉 How It Works Internally
+    ✔ When your Android app runs:
+        App requests memory
+        OS allocates memory in pages
+        Virtual memory maps to physical memory
+        CPU uses page tables
+        TLB caches translations
+    ✔ If page size is 4 KB:
+        More pages needed
+        Larger page tables
+        More TLB entries
+    ✔ If page size is 16 KB:
+        Fewer pages
+        Smaller page tables
+        Better TLB efficiency
+
+👉 Seeing “16 KB Page Size” Errors?
+    This happens because: Native libraries (.so files) are built assuming 4 KB alignment.
+    If native binaries:
+        Are not properly aligned
+        Use hardcoded assumptions
+        Use old NDK versions
+    They may crash on 16 KB devices.
+
+👉 Which Android Versions Support 16 KB?
+    Starting from: Android 14
+    Google strongly encourages apps to support 16 KB page size.
+    Newer devices launching with modern ARM chips may default to 16 KB.
+
+👉 How To Check Page Size on Android
+    ✔ Check for Native Libraries
+        jniLibs/
+        externalNativeBuild
+        CMakeLists.txt
+
+    ✔ Check Page Alignment in .so Files
+        On Linux/macOS:
+            readelf -l libyourlibrary.so | grep LOAD
+        Look at alignment values.
+            For 16 KB compatibility You can check page size using:
+                  getconf PAGE_SIZE Or adb shell getconf PAGE_SIZE
+            If output is:
+              4096 → 4 KB
+              16384 → 16 KB
+    ✔ Check Your NDK Version
+        In build.gradle: ndkVersion "25.2.9519653"
+        Use: NDK r25+ (recommended), Prefer latest stable NDK
+        Older NDK versions may not generate compatible binaries.
+
+👉 How To Fix 16 KB Page Size Issues
+    ✔ Upgrade NDK
+        Update to latest NDK via:
+        Android Studio → SDK Manager → SDK Tools → NDK (Side by side)
+        Latest Android Studio versions already support this properly.
+
+    ✔ Update CMake Configuration
+        In CMakeLists.txt, ensure no forced page size flags exist like: -Wl,-z,max-page-size=4096
+        Instead, either remove it or use: -Wl,-z,max-page-size=16384 Or let the toolchain decide automatically (recommended).
+
+    ✔ Rebuild All Native Libraries
+        Clean and rebuild:
+            ./gradlew clean
+            ./gradlew assembleRelease
+        Ensure all .so files are regenerated.
+
+    ✔ Update Third-Party Native SDKs
+        If you use:
+            WebRTC
+            FFmpeg
+            Payment SDKs
+            Streaming SDKs
+            Encryption libraries
+
+        You must:
+            Contact vendor
+            Update to latest version
+            Confirm 16 KB page support
+        Since you're working with WebRTC and streaming stacks, this is especially critical.
+
+    ✔ Enable Proper ABI Splits
+        Ensure targeting: abiFilters "arm64-v8a"
+        Most 16 KB devices are ARM64.
+
+    ✔ Test on 16 KB Emulator
+        New emulator system images support 16 KB pages.
+        Create:
+            ARM64 device
+            Android 14+
+            16 KB page configuration
+        Test: adb shell getconf PAGE_SIZE
+        If output: 16384
+
+    ✔ Play Store & Future Enforcement
+         Google has indicated that future device launches may require 16 KB compatibility.
+         Keep monitoring:
+             Android Developer Blog
+             NDK release notes
+             Play Console warnings
+
+    ✔ Architecture-Level Best Practices (For Large Apps)
+        CI Validation
+            Add script to CI: Scan .so files
+            Validate alignment = 0x4000
+        Dependency Governance
+            Maintain:  Native SDK version tracking and Vendor compatibility matrix
+        Avoid Hardcoded Memory Assumptions
+            Never: Assume page size = 4096
+            Use fixed mmap offsets long pageSize = sysconf(_SC_PAGESIZE);
+
+    ✔ Common Crash
+              You may see: dlopen failed: unsupported page size
+
+👉 4 KB vs 16 KB Comparison
+    | Feature              | 4 KB        | 16 KB                 |
+    | -------------------- | ----------- | --------------------- |
+    | Memory fragmentation | Higher      | Lower                 |
+    | Page table size      | Larger      | Smaller               |
+    | TLB efficiency       | Lower       | Higher                |
+    | Compatibility        | Legacy safe | Requires modern build |
+    | Performance          | Standard    | Better for large apps |
+
+
+👉 You can also create a script to automatically detect:
+The specific native library that is not 16 KB aligned
+The ABI (armeabi-v7a, arm64-v8a, x86, etc.) it belongs to
+The exact memory alignment value of each ELF segment
+
+

@@ -3,14 +3,21 @@ SOLID Principle
 SOLID principles are an object-oriented approach that are applied to software structure design. 
 It also ensures that the software is modular, easy to understand, debug, and refactor. 
 
-Single Responsibility Principle (SRP)
-Open-Closed Principle (OCP)
-Liskov Substitution Principle (LSP)
-Interface Segregation Principle (ISP)
-Dependency Inversion Principle (DIP)
+1) Single Responsibility Principle (SRP)
+    A Class should have only one reason to change. OR A class has to have only one responsibility.
+2) Open-Closed Principle (OCP)
+    Software entities such as classes, functions, and modules should be open for extension but closed for modification.
+3) Liskov Substitution Principle (LSP)
+    Child classes should never break the parent class’ type definitions.
+4) Interface Segregation Principle (ISP)
+    ISP states that “do not force any client to implement an interface which is irrelevant to them“.
+5) Dependency Inversion Principle (DIP)
+    DIP states that high-level modules should not depend on low-level modules. Both should depend on abstractions and
+    Details should depend upon abstractions
 
+---------------------------------------------------------------------------------------------------------------------------------------
 ==> Single Responsibility Principle (SRP)
-The single responsibility principle states that every Java class must perform a single functionality.
+The single responsibility principle states that every class must perform a single functionality.
 If our class is doing more than one responsibility, Then we should split our class in such a manner,
 That one class has only one responsibility and others have other responsibilities, Else we are violating SRP.
 
@@ -114,7 +121,7 @@ Good example:
 
 	Above we have separated each class as a responsibility, So the code is cleaner and readable, and maintainable, If we want to use any of the classes independently in many places we can do it easily, and If we want to update any class so it is much easier now.
 
-
+---------------------------------------------------------------------------------------------------------------------------------------
 ==> Open-Closed Principle (OCP)
 This principle states that “Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification”
 
@@ -183,12 +190,14 @@ Good example:
         pos.processPayment(paypal, 500.0)
     }
 
-
+---------------------------------------------------------------------------------------------------------------------------------------
 ==> Liskov Substitution Principle (LSP)
 According to this principle “Derived or child classes must be substitutable for their base or parent classes“.
-Parent classes should be easily substituted with their child classes without changing the behaviour of the parent classes. It means that a subclass should override the methods from a parent class, which does not break the functionality of the parent class.
+Parent classes should be easily substituted with their child classes without changing the behaviour of the parent classes.
+It means that a subclass should override the methods from a parent class, which does not break the functionality of the parent class.
 
-This becomes important when we use inheritance, We always need to check if the child class is a proper subset of a parent class then only we should use inheritance otherwise we are breaking LSP.
+This becomes important when we use inheritance, We always need to check if the child class is a proper subset of a parent class then only
+we should use inheritance otherwise we are breaking LSP.
 
 Bad Example:
     Let’s say someone decides to throw an exception for discounts in a subclass that should follow the base class’s rules.
@@ -210,9 +219,7 @@ Good Example:
     }
 
     2. Subclass: Discountable Product
-    class DiscountedProduct(name: String, price: Double, val discountPercent: Double)
-        : Product(name, price) {
-
+    class DiscountedProduct(name: String, price: Double, val discountPercent: Double): Product(name, price) {
         override fun getFinalPrice(): Double {
             return price - (price * discountPercent / 100)
         }
@@ -239,7 +246,7 @@ Good Example:
         printReceipt(items)
     }
 
-
+---------------------------------------------------------------------------------------------------------------------------------------
 ==> Interface Segregation Principle (ISP)
 It states that “do not force any client to implement an interface which is irrelevant to them“. 
 
@@ -313,9 +320,10 @@ Good example:
         processPOS(printer, scanner, reader)
     }
 
-
+---------------------------------------------------------------------------------------------------------------------------------------
 ==> Dependency Inversion Principle (DIP)
-This principle states that high-level modules should not depend on low-level modules. Both should depend on abstractions and Abstractions should not depend upon details. Details should depend upon abstractions.
+This principle states that high-level modules should not depend on low-level modules. Both should depend on abstractions and
+Abstractions should not depend upon details. Details should depend upon abstractions.
 
 Bad Example:
     class PaymentProcessor {
@@ -376,3 +384,4 @@ Good example:
     PaymentProcessor doesn’t care how the payment is done — it relies on the PaymentMethod interface.
     Low-level modules (CardPayment, PayPalPayment) can be changed without touching PaymentProcessor.
     You can easily add test stubs or mocks for unit testing.
+    ---------------------------------------------------------------------------------------------------------------------------------------

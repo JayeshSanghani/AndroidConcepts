@@ -45,7 +45,68 @@ Extention and suspended func
 
 =============================================================================================
 
+Side effetcs
+All Remember scopes
+State hoisting
+What is key in compose
+How composable is recomposed during state changes
 
+Flows
+State flow, Mutable state flow
+Hot and cold flow
+Shared flow vs state flow
+Different Flow operators
+
+kotlin concepts
+solid principles
+Dependency injection
+Unit testing
+Unit testinf of flows
+Mvvm
+clean architecture
+
+1.Difference b/w Shared vs state flow.
+2.Write code to implement AIDL: App #1 shares some text that app #2 will use it.
+3.Questions around different Dispatchers in coroutine.
+4.In Jetpack Compose how does lazy column work internally.
+5.What are the possible ways to persist data. In which case should we use: Shared Pref vs SQLite DB?
+6.In a coroutine we want to switch from background thread to main thread, perform operation and then switch back. Write the .exact code.
+
+var x : Int?= null
+1) difference between
+x?.let { }
+if ( x != null )
+
+2) which statement is correct and why
+ lateinit val str: String
+ lateinit var str: String
+ lateinit var x: Int? = 5
+
+3) difference between lateinit and lazy
+4) Coroutines in details
+5) types of coroutine scops
+6) why we do DB operation using Coroutines
+7) explain MVVM architecture
+8) Android components
+
+Explain Coroutine in details
+Use of runBlocking
+Explain MVVM design pattern
+Explain clean architecture
+Write code to show use of coroutine and switch between thread
+Give output of given program
+Explain activity lifecycle in details
+Scenario question based on activity lifecycle: Suppose app is running and clicked home button then which lifecycle methods getting called
+Explain car properties
+How VHAL works
+How car sending signals explain scenario
+How to handle continuously flow of CAN signals
+Explain the methods which return CAN signals response
+
+
+HLS: HTTP Live Streaming
+DASH: Dynamic Adaptive Streaming over HTTP
+DRM: Digital Rights Management
 =============================================================================================
 
 
@@ -85,9 +146,6 @@ Jetpack Compose Interview Questions:
 -> How do you handle orientation changes in Jetpack Compose?
 -> Explain the concept of unidirectional data flow in Jetpack Compose.
 -> How to create Custom Layouts in Compose?
-
-
-
 -> What are Dispatchers and Name all of them
 -> On which thread Dispatchers .Default execute the task or use which thread?
 -> Dispatchers .Default vs Dispatcher .IO
@@ -126,6 +184,11 @@ Jetpack Compose Interview Questions:
 -> What is Heap and Stack Memory?
 -> Destructuring declaration
 
+JPMorgan
+->OOP concepts
+    -What is abstractions and polymorphism
+    -Write thread safe singleton class
+    -Write hyderorder function
 
 Android Layers
 Android App lifecycle

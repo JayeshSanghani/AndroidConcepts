@@ -1,0 +1,54 @@
+-->Mock vs Spy
+Feature				Mock											Spy
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Object				Fake                                    Real (wrapped)
+Default behavior	All methods return default/null		    Real methods called
+Stub needed			Always (else returns null/0/false)r		Only when overriding specific methods
+Use case	        Isolated testing						Partial real behavior
+
+
+
+What is your ideal Android CI pipeline?
+    PR → Lint → Unit Test → Build → UI Test → Artifact
+
+How do you cache Gradle in CI?
+    - uses: actions/cache@v3
+      with:
+        path: ~/.gradle
+
+How do you enforce quality gates?
+    Fail PR on:
+    Lint errors
+    Test failures
+    Coverage drop
+
+How do you handle secrets in CI?
+    GitHub Secrets
+    Jenkins Credentials
+    Never hardcode keys
+
+Difference between build types and flavors?
+    Build Type	    Flavor
+    debug/release	dev/staging/prod
+    How built	    What built
+
+How do you manage signing securely?
+    Store keystore outside repo
+    Use gradle.properties
+    CI injects secrets
+    signingConfigs {
+        release {
+            storeFile file(KEYSTORE_PATH)
+        }
+    }
+
+How do you automate versioning?
+    Use Git tags
+    CI increments versionCode
+    Use versionCodeOverride
+
+How do you reduce build time?
+    Enable Gradle cache
+    Modularization
+    Avoid dynamic dependencies
+    Use configuration cache
