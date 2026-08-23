@@ -173,10 +173,81 @@ ABOUT HAL(Hardware Abstraction Layer)
     It exposes standardized vehicle properties so Android apps can read/write vehicle data without knowing hardware details.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+👉 RRO: Runtime resource overlay
+It is a mechanism that allows Android to replace/override resources of an existing APK at runtime without modifying the original APK.
+Java and kotline code can not be overlayed. We can overlay whatever coming under resource folder 
 
+AMS: Activity Manager Services - It's a core Android system service that manages the lifecycle of activities, tasks, and processes running on the device.
+BSD: Berkeley Software Distribution — an operating system based on Research Unix, developed and distributed by the Computer Systems Research Group (CSRG)
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+👉 Android / AOSP Build System
 
+                    AOSP SOURCE
+                          │
+          ┌───────────────┼────────────────┐
+          ↓               ↓                ↓
+    frameworks/        packages/         vendor/
+    system/            hardware/         device/
+          │               │                │
+          └───────────────┼────────────────┘
+                          ↓
+                    Android.bp
+                          │
+                          ↓
+                       SOONG
+                          │
+                  Build Dependency
+                       Graph
+                          │
+                          ↓
+                       NINJA
+                          │
+          ┌───────────────┼────────────────┐
+          ↓               ↓                ↓
+       Compiler        Resource          Linker
+          │             Tools               │
+          └───────────────┼────────────────┘
+                          ↓
+                  APK / JAR / .SO
+                          │
+                          ↓
+                    Android Images
+                          │
+                          ↓
+                       DEVICE
+                          │
+                          ↓
+                       init
+                          ↓
+                       Zygote
+                          ↓
+                   system_server
+                          ↓
+                   SystemUI / Apps
+
+👉 Explain the Android build system.
+AOSP source code
+      ↓
+Android.bp
+      ↓
+Soong
+      ↓
+Dependency graph
+      ↓
+Ninja build rules
+      ↓
+Compiler / linker / resource tools
+      ↓
+APK / JAR / .so / binaries
+      ↓
+system.img / vendor.img / product.img ...
+      ↓
+Android device
+
+👉 What is Soong?
+Soong is Android's primary build system. It reads declarative Android.bp module definitions, constructs the build graph and generates Ninja build rules, 
+while Ninja executes the actual build commands. AOSP also has Kati/Make compatibility infrastructure during the transition away from Android.mk.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
